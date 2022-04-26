@@ -69,6 +69,8 @@ For cache stores, multiple stores of the same backend can be configured, it may 
 Example configuration of `lol` model and a default pipeline including a cache store that caches summoners for 100 seconds, matches and timelines for 10 minutes; and service stores for CDragon and RiotAPI:
 
 ```python
+import os
+
 from pyot.conf.model import activate_model, ModelConf
 from pyot.conf.pipeline import activate_pipeline, PipelineConf
 
