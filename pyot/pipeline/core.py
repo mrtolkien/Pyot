@@ -9,15 +9,17 @@ from .token import PipelineToken
 
 
 class Pipeline:
-    '''Pipeline containing a sequence of stores for request execution.'''
+    """Pipeline containing a sequence of stores for request execution."""
 
     def __init__(self, model: str, name: str, stores: List[Store]):
         self.model = model
         self.name = name
         self.stores = stores
         self.sessions = EventLoopFactory(
-            factory=lambda: aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False)),
-            callback=lambda session: session.close()
+            factory=lambda: aiohttp.ClientSession(
+                connector=aiohttp.TCPConnector(ssl=False)
+            ),
+            callback=lambda session: session.close(),
         )
 
     def __iter__(self) -> Iterator[Store]:
@@ -27,7 +29,7 @@ class Pipeline:
         return self.stores[item]
 
     async def get(self, token: PipelineToken):
-        '''Get an object from the stores.'''
+        """Get an object from the stores."""
         session = await self.sessions.get()
         found_in = None
         last_exc = NotFindable
@@ -47,17 +49,18 @@ class Pipeline:
         return response
 
     async def set(self, token: PipelineToken, value: Any, stop=None):
-        '''Set an object to stores of type Cache.'''
+        """Set an object to stores of type Cache."""
         session = await self.sessions.get()
         for store in self.stores:
-            if store is stop: break
+            if store is stop:
+                break
             try:
                 await store.set(token, value, session=session)
             except NotImplementedError:
                 continue
 
     async def post(self, token: PipelineToken, body: Any):
-        '''Post an object to stores of type Service.'''
+        """Post an object to stores of type Service."""
         session = await self.sessions.get()
         last_exc = NotFindable
         for store in self.stores:
@@ -74,7 +77,7 @@ class Pipeline:
         return response
 
     async def put(self, token: PipelineToken, body: Any):
-        '''Put an object to stores of type Service.'''
+        """Put an object to stores of type Service."""
         session = await self.sessions.get()
         last_exc = NotFindable
         for store in self.stores:
@@ -91,7 +94,7 @@ class Pipeline:
         return response
 
     async def clear(self):
-        '''Clear stores of type Cache.'''
+        """Clear stores of type Cache."""
         session = await self.sessions.get()
         for store in self.stores:
             try:
@@ -100,7 +103,7 @@ class Pipeline:
                 continue
 
     async def expire(self):
-        '''Expire stores of type Cache that cannot dynamically expire.'''
+        """Expire stores of type Cache that cannot dynamically expire."""
         session = await self.sessions.get()
         for store in self.stores:
             try:
@@ -109,7 +112,7 @@ class Pipeline:
                 continue
 
     async def delete(self, token: PipelineToken):
-        '''Delete an object from the stores.'''
+        """Delete an object from the stores."""
         session = await self.sessions.get()
         for store in self.stores:
             try:
@@ -118,7 +121,7 @@ class Pipeline:
                 continue
 
     async def contains(self, token: PipelineToken) -> bool:
-        '''Check if an object exist in stores of type Cache.'''
+        """Check if an object exist in stores of type Cache."""
         session = await self.sessions.get()
         contains = False
         for store in self.stores:
@@ -126,5 +129,6 @@ class Pipeline:
                 contains = await store.contains(token, session=session)
             except NotImplementedError:
                 continue
-            if contains: break
+            if contains:
+                break
         return contains

@@ -43,7 +43,11 @@ async def test_league():
     o = await tft.SummonerLeague(summoner_id=s.id, platform="na1").get()
     assert_walkable(o)
     assert_types(o)
-    o = await tft.DivisionLeague(tier="GOLD", division="I", platform="na1").query(page=1).get()
+    o = (
+        await tft.DivisionLeague(tier="GOLD", division="I", platform="na1")
+        .query(page=1)
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
 
@@ -51,7 +55,11 @@ async def test_league():
 @async_to_sync
 async def test_match():
     s = await tft.Summoner(name="Morimorph", platform="na1").get()
-    o = await tft.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform)).query(count=100).get()
+    o = (
+        await tft.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform))
+        .query(count=100)
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
     o = await s.match_history.query(count=100).get()

@@ -11,8 +11,13 @@ from .functional import lazy_property, laziable, parse_camelcase
 
 
 class PyotLazy:
-
-    def __init__(self, container: Union[None, Type[list], Type[dict]], clas: Union[Type["PyotStaticBase"], Type["PyotCoreBase"]], obj: Any, root: "PyotCoreBase"):
+    def __init__(
+        self,
+        container: Union[None, Type[list], Type[dict]],
+        clas: Union[Type["PyotStaticBase"], Type["PyotCoreBase"]],
+        obj: Any,
+        root: "PyotCoreBase",
+    ):
         self.container = container
         self.clas = clas
         self.root = root
@@ -36,7 +41,9 @@ class PyotLazy:
                 return {okey: self.load_static(obj) for okey, obj in self.obj.items()}
             raise TypeError(f"Invalid container type '{self.container.__name__}'")
         except Exception as e:
-            raise RuntimeError(f"Failed to lazy load '{self.clas.__name__}' object due to: ({type(e)}) {e}") from e
+            raise RuntimeError(
+                f"Failed to lazy load '{self.clas.__name__}' object due to: ({type(e)}) {e}"
+            ) from e
 
     def load_static(self, obj):
         instance: "PyotStaticBase" = self.clas(obj)
@@ -46,17 +53,31 @@ class PyotLazy:
     def load_core(self, obj):
         kwargs = {}
         if "version" in self.clas.Meta.arg_names:
-            try: kwargs["version"] = self.root.version
-            except AttributeError: pass
+            try:
+                kwargs["version"] = self.root.version
+            except AttributeError:
+                pass
         if "locale" in self.clas.Meta.arg_names:
-            try: kwargs["locale"] = self.root.locale
-            except AttributeError: pass
-        if "platform" in self.clas.Meta.arg_names and "platform" in self.root.Meta.arg_names:
-            try: kwargs["platform"] = self.root.platform
-            except AttributeError: pass
-        if "region" in self.clas.Meta.arg_names and "region" in self.root.Meta.arg_names:
-            try: kwargs["region"] = self.root.region
-            except AttributeError: pass
+            try:
+                kwargs["locale"] = self.root.locale
+            except AttributeError:
+                pass
+        if (
+            "platform" in self.clas.Meta.arg_names
+            and "platform" in self.root.Meta.arg_names
+        ):
+            try:
+                kwargs["platform"] = self.root.platform
+            except AttributeError:
+                pass
+        if (
+            "region" in self.clas.Meta.arg_names
+            and "region" in self.root.Meta.arg_names
+        ):
+            try:
+                kwargs["region"] = self.root.region
+            except AttributeError:
+                pass
         instance: "PyotCoreBase" = self.clas(**kwargs)
         instance._meta.root = self.root
         instance._meta.data = instance.transform(obj)
@@ -64,7 +85,6 @@ class PyotLazy:
 
 
 class PyotRoutingBase:
-
     class Meta:
         root: "PyotCoreBase"
         pipeline: Pipeline
@@ -80,10 +100,17 @@ class PyotRoutingBase:
 
     @property
     def region(self) -> str:
-        val = self._region or self._meta.root._region or \
-            self._platform2regions.get(self._platform or self._meta.root._platform, None)
+        val = (
+            self._region
+            or self._meta.root._region
+            or self._platform2regions.get(
+                self._platform or self._meta.root._platform, None
+            )
+        )
         if val is None:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'region'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute 'region'"
+            )
         return val
 
     @region.setter
@@ -97,7 +124,9 @@ class PyotRoutingBase:
     def platform(self) -> str:
         val = self._platform or self._meta.root._platform
         if val is None:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'platform'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute 'platform'"
+            )
         return val
 
     @platform.setter
@@ -111,7 +140,9 @@ class PyotRoutingBase:
     def locale(self) -> str:
         val = self._locale or self._meta.root._locale
         if val is None:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'locale'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute 'locale'"
+            )
         return val
 
     @locale.setter
@@ -122,7 +153,9 @@ class PyotRoutingBase:
     def version(self) -> str:
         val = self._version or self._meta.root._version
         if val is None:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'version'")
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute 'version'"
+            )
         return val
 
     @version.setter
@@ -139,10 +172,13 @@ class PyotRoutingBase:
 
 
 class PyotMetaClass(type):
-
     def __new__(cls, name, bases, attrs):
-        if 'Meta' not in attrs and cls.is_static_core(bases):
-            attrs['Meta'] = type('Meta', (cls.get_static_core(bases).Meta,), {'__module__': attrs['__module__'] + f".{name}"})
+        if "Meta" not in attrs and cls.is_static_core(bases):
+            attrs["Meta"] = type(
+                "Meta",
+                (cls.get_static_core(bases).Meta,),
+                {"__module__": attrs["__module__"] + f".{name}"},
+            )
         clas: "PyotStaticBase" = super().__new__(cls, name, bases, attrs)
         clas.Meta.types = cls.get_types(clas)
         clas.Meta.nomcltrs = {}
@@ -154,7 +190,9 @@ class PyotMetaClass(type):
                     clas.Meta.arg_names = arg_names
                 except TypeError:
                     pass
-            clas.Meta.lazy_props = [prop.split(".") for prop in cls.get_lazy_props(clas, [])]
+            clas.Meta.lazy_props = [
+                prop.split(".") for prop in cls.get_lazy_props(clas, [])
+            ]
         return clas
 
     @staticmethod
@@ -162,7 +200,7 @@ class PyotMetaClass(type):
         base_names = set()
         for base in bases:
             base_names |= {cl.__name__ for cl in inspect.getmro(base)}
-        return 'PyotStatic' in base_names or 'PyotCore' in base_names
+        return "PyotStatic" in base_names or "PyotCore" in base_names
 
     @staticmethod
     def get_static_core(bases):
@@ -170,9 +208,9 @@ class PyotMetaClass(type):
         for base in bases:
             deep_bases |= set(inspect.getmro(base))
         try:
-            return next(base for base in deep_bases if base.__name__ == 'PyotCore')
+            return next(base for base in deep_bases if base.__name__ == "PyotCore")
         except StopIteration:
-            return next(base for base in deep_bases if base.__name__ == 'PyotStatic')
+            return next(base for base in deep_bases if base.__name__ == "PyotStatic")
 
     @staticmethod
     def get_types(clas: "PyotStaticBase"):
@@ -191,8 +229,14 @@ class PyotMetaClass(type):
 
     @staticmethod
     def get_lazy_props(clas: "PyotStaticBase", props, prefix=""):
-        props += [prefix + p for p in dir(clas) if isinstance(getattr(clas, p), lazy_property)]
-        types = {attr:cl for attr, cl in clas.Meta.types.items() if inspect.isclass(cl) and issubclass(cl, PyotStaticBase)}
+        props += [
+            prefix + p for p in dir(clas) if isinstance(getattr(clas, p), lazy_property)
+        ]
+        types = {
+            attr: cl
+            for attr, cl in clas.Meta.types.items()
+            if inspect.isclass(cl) and issubclass(cl, PyotStaticBase)
+        }
         for typ, cl in types.items():
             PyotMetaClass.get_lazy_props(cl, props, prefix + typ + ".")
         return props
@@ -206,7 +250,6 @@ class PyotMetaClass(type):
 
 
 class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
-
     class Meta(PyotRoutingBase.Meta):
         # Mutable objects should be overriden on inheritance
         server_type: str = None
@@ -226,19 +269,21 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
 
     def __getattr__(self, name):
         try:
-            lazy = self.__dict__.pop('_lazy__' + name)
+            lazy = self.__dict__.pop("_lazy__" + name)
             obj = lazy()
             setattr(self, name, obj)
             return obj
         except (KeyError, AttributeError) as e:
-            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'") from e
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{name}'"
+            ) from e
 
     def __getitem__(self, item):
         return self._meta.data[item]
 
     def qualkey(self, key: str) -> str:
-        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', key)
-        newkey = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+        name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", key)
+        newkey = re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
         if newkey in self._meta.renamed:
             newkey = self._meta.renamed[newkey]
         return newkey
@@ -259,7 +304,11 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
                     continue
                 try:
                     attr_type = self._meta.types[attr]
-                    setattr(self, '_lazy__' + attr, PyotLazy(attr_type[1], attr_type[0], val, self._meta.root))
+                    setattr(
+                        self,
+                        "_lazy__" + attr,
+                        PyotLazy(attr_type[1], attr_type[0], val, self._meta.root),
+                    )
                 except KeyError:
                     setattr(self, attr, val)
             else:
@@ -302,7 +351,9 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
                         elif issubclass(container, dict):
                             dic[key] = {okey: ob.rdict() for okey, ob in obj.items()}
                         else:
-                            raise TypeError(f"Invalid container type '{container.__name__}'")
+                            raise TypeError(
+                                f"Invalid container type '{container.__name__}'"
+                            )
                     except AttributeError:
                         pass
                 else:
@@ -320,7 +371,6 @@ class PyotStaticBase(PyotRoutingBase, metaclass=PyotMetaClass):
 
 
 class PyotCoreBase(PyotStaticBase):
-
     class Meta(PyotStaticBase.Meta):
         # Mutable objects should be overriden on inheritance
         key: str
@@ -359,7 +409,7 @@ class PyotCoreBase(PyotStaticBase):
             load = {}
             for a in attr:
                 try:
-                    checkonly = a.startswith('?')
+                    checkonly = a.startswith("?")
                     if checkonly:
                         getattr(self, a[1:])
                         continue
@@ -392,32 +442,40 @@ class PyotCoreBase(PyotStaticBase):
         self.fill()
 
     async def token(self) -> PipelineToken:
-        '''Coroutine. Create a pipeline token that identifies this object (its parameters).'''
+        """Coroutine. Create a pipeline token that identifies this object (its parameters)."""
         await self.setup()
         self.match_rule()
         self.match_server()
         self.clean()
         try:
-            return PipelineToken(self._meta.pipeline.model, self._meta.server, self._meta.key, self._meta.load, self._meta.query)
+            return PipelineToken(
+                self._meta.pipeline.model,
+                self._meta.server,
+                self._meta.key,
+                self._meta.load,
+                self._meta.query,
+            )
         except AttributeError as e:
-            raise ValueError("Token creation failed, please ensure a pipeline is activated or provided") from e
+            raise ValueError(
+                "Token creation failed, please ensure a pipeline is activated or provided"
+            ) from e
 
     async def get(self, pipeline: str = None, deepcopy: bool = False):
-        '''Coroutine. Make a GET request to the pipeline.'''
+        """Coroutine. Make a GET request to the pipeline."""
         self.pre_request(pipeline)
         data = await self._meta.pipeline.get(await self.token())
         self.post_request(data, deepcopy)
         return self
 
     async def post(self, pipeline: str = None, deepcopy: bool = False):
-        '''Coroutine. Make a POST request to the pipeline.'''
+        """Coroutine. Make a POST request to the pipeline."""
         self.pre_request(pipeline)
         data = await self._meta.pipeline.post(await self.token(), self._meta.body)
         self.post_request(data, deepcopy)
         return self
 
     async def put(self, pipeline: str = None, deepcopy: bool = False):
-        '''Coroutine. Make a PUT request to the pipeline.'''
+        """Coroutine. Make a PUT request to the pipeline."""
         self.pre_request(pipeline)
         data = await self._meta.pipeline.put(await self.token(), self._meta.body)
         self.post_request(data, deepcopy)
@@ -427,16 +485,18 @@ class PyotCoreBase(PyotStaticBase):
         try:
             self._meta.pipeline = pipelines[name]
         except KeyError as e:
-            raise ValueError(f"Pipeline '{name}' does not exist, inactive or dead") from e
+            raise ValueError(
+                f"Pipeline '{name}' does not exist, inactive or dead"
+            ) from e
         return self
 
     def query(self, **kwargs):
-        '''Query parameters setter.'''
+        """Query parameters setter."""
         self._meta.query = parse_camelcase(locals())
         return self
 
     def body(self, **kwargs):
-        '''Body parameters setter.'''
+        """Body parameters setter."""
         self._meta.body = parse_camelcase(locals())
         return self
 
@@ -467,4 +527,5 @@ class PyotCoreBase(PyotStaticBase):
         return data
 
 
-class PyotUtilBase: pass
+class PyotUtilBase:
+    pass

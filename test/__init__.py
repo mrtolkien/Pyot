@@ -9,8 +9,9 @@ from .core import inject_guards
 
 inject_guards()
 
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     from pyot.utils.runtime import silence_proactor_pipe_deallocation
+
     silence_proactor_pipe_deallocation()
 
 
@@ -42,7 +43,7 @@ class LolPipeline(PipelineConf):
                 "summoner_v4_by_name": 100,
                 "match_v5_match": 600,
                 "match_v5_timeline": 600,
-            }
+            },
         },
         {
             "backend": "pyot.stores.merakicdn.MerakiCDN",
@@ -56,7 +57,7 @@ class LolPipeline(PipelineConf):
             "backend": "pyot.stores.riotapi.RiotAPI",
             "log_level": 30,
             "api_key": os.environ["RIOT_API_KEY"],
-        }
+        },
     ]
 
 
@@ -79,7 +80,7 @@ class TftPipeline(PipelineConf):
             "expirations": {
                 "summoner_v1_by_name": 100,
                 "match_v1_match": 600,
-            }
+            },
         },
         {
             "backend": "pyot.stores.cdragon.CDragon",
@@ -89,7 +90,7 @@ class TftPipeline(PipelineConf):
             "backend": "pyot.stores.riotapi.RiotAPI",
             "log_level": 30,
             "api_key": os.environ["TFT_API_KEY"],
-        }
+        },
     ]
 
 
@@ -110,13 +111,13 @@ class ValPipeline(PipelineConf):
             "expirations": {
                 "account_v1_by_riot_id": 100,
                 "match_v1_match": 600,
-            }
+            },
         },
         {
             "backend": "pyot.stores.riotapi.RiotAPI",
             "log_level": 30,
             "api_key": os.environ["PYOT_DEV_KEY"],
-        }
+        },
     ]
 
 
@@ -138,7 +139,7 @@ class LorPipeline(PipelineConf):
             "expirations": {
                 "account_v1_by_riot_id": 100,
                 "match_v1_match": 600,
-            }
+            },
         },
         {
             "backend": "pyot.stores.ddragon.DDragon",
@@ -148,5 +149,5 @@ class LorPipeline(PipelineConf):
             "backend": "pyot.stores.riotapi.RiotAPI",
             "log_level": 30,
             "api_key": os.environ["LOR_API_KEY"],
-        }
+        },
     ]

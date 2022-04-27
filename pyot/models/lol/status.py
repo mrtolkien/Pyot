@@ -7,6 +7,7 @@ from .base import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 
+
 class StatusContentData(PyotStatic):
     locale: str
     content: str
@@ -16,14 +17,17 @@ class StatusUpdateData(PyotStatic):
     id: int
     author: str
     publish: bool
-    publish_locations: List[str] # (Legal values: riotclient, riotstatus, game)
+    publish_locations: List[str]  # (Legal values: riotclient, riotstatus, game)
     translations: List[StatusContentData]
     created_at_strftime: str
     updated_at_strftime: str
 
     class Meta(PyotCore.Meta):
         raws = {"publish_locations"}
-        renamed = {"created_at": "created_at_strftime", "updated_at": "updated_at_strftime"}
+        renamed = {
+            "created_at": "created_at_strftime",
+            "updated_at": "updated_at_strftime",
+        }
 
     @property
     def created_at(self) -> datetime:
@@ -38,8 +42,8 @@ class StatusUpdateData(PyotStatic):
 
 class StatusDetailData(PyotStatic):
     id: int
-    maintenance_status: str # (Legal values: scheduled, in_progress, complete)
-    incident_severity: str # (Legal values: info, warning, critical)
+    maintenance_status: str  # (Legal values: scheduled, in_progress, complete)
+    incident_severity: str  # (Legal values: info, warning, critical)
     titles: List[StatusContentData]
     updates: List[StatusUpdateData]
     created_at_strftime: str
@@ -49,7 +53,11 @@ class StatusDetailData(PyotStatic):
 
     class Meta(PyotCore.Meta):
         raws = {"platforms"}
-        renamed = {"created_at": "created_at_strftime", "updated_at": "updated_at_strftime", "archive_at": "archive_at_strftime"}
+        renamed = {
+            "created_at": "created_at_strftime",
+            "updated_at": "updated_at_strftime",
+            "archive_at": "archive_at_strftime",
+        }
 
     @property
     def created_at(self) -> datetime:
@@ -68,6 +76,7 @@ class StatusDetailData(PyotStatic):
 
 
 # PYOT CORE OBJECTS
+
 
 class Status(PyotCore):
     id: str

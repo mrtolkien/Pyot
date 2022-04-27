@@ -13,7 +13,13 @@ class Account(PyotCore):
             "account_v1_by_riot_id": ["game_name", "tag_line"],
         }
 
-    def __init__(self, puuid: str = None, game_name: str = None, tag_line: str = None, region: str = models.riot.DEFAULT_REGION):
+    def __init__(
+        self,
+        puuid: str = None,
+        game_name: str = None,
+        tag_line: str = None,
+        region: str = models.riot.DEFAULT_REGION,
+    ):
         self.initialize(locals())
 
     def active_shard(self, game: str):
@@ -28,7 +34,12 @@ class ActiveShard(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"account_v1_active_shard": ["puuid", "game"]}
 
-    def __init__(self, puuid: str = None, game: str = None, region: str = models.riot.DEFAULT_REGION):
+    def __init__(
+        self,
+        puuid: str = None,
+        game: str = None,
+        region: str = models.riot.DEFAULT_REGION,
+    ):
         self.initialize(locals())
 
     @property

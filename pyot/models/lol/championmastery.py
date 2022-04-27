@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 # PYOT CORE OBJECTS
 
+
 class ChampionMastery(PyotCore):
     champion_id: int
     champion_level: int
@@ -25,30 +26,37 @@ class ChampionMastery(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {"champion_mastery_v4_by_champion_id": ["summoner_id", "champion_id"]}
-        renamed = {'last_play_time': 'last_play_timestamp'}
+        renamed = {"last_play_time": "last_play_timestamp"}
 
-    def __init__(self, summoner_id: str = None, champion_id: int = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(
+        self,
+        summoner_id: str = None,
+        champion_id: int = None,
+        platform: str = models.lol.DEFAULT_PLATFORM,
+    ):
         self.initialize(locals())
 
     @property
     def last_play_time(self) -> datetime:
-        return datetime.fromtimestamp(self.last_play_timestamp//1000)
+        return datetime.fromtimestamp(self.last_play_timestamp // 1000)
 
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(id=self.summoner_id, platform=self.platform)
 
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
+
         return Champion(id=self.champion_id)
 
     @property
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
-        return MerakiChampion(id=self.champion_id)
 
+        return MerakiChampion(id=self.champion_id)
 
 
 class ChampionMasteries(PyotCore):
@@ -70,7 +78,9 @@ class ChampionMasteries(PyotCore):
     def __len__(self):
         return len(self.masteries)
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(
+        self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM
+    ):
         self.initialize(locals())
 
     def transform(self, data):
@@ -84,4 +94,5 @@ class ChampionMasteries(PyotCore):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(id=self.summoner_id, platform=self.platform)

@@ -8,6 +8,7 @@ from .base import PyotCore
 
 # PYOT CORE OBJECTS
 
+
 class Spell(PyotCore):
     id: int
     name: str
@@ -22,7 +23,12 @@ class Spell(PyotCore):
         renamed = {"game_modes": "modes"}
         rules = {"cdragon_spells_full": ["version", "locale", "?id"]}
 
-    def __init__(self, id: int = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        id: int = None,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     @cache_indexes
@@ -40,7 +46,11 @@ class Spells(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_spells_full": ["version", "locale"]}
 
-    def __init__(self, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):

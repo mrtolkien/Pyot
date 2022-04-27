@@ -47,13 +47,11 @@ class Filterer:
             "summoner_v4_by_account_id": pass_all,
             "summoner_v4_by_puuid": pass_all,
             "third_party_code_v4_code": pass_all,
-
             "cdragon_champion_by_id": pass_all,
             "cdragon_item_full": pass_all,
             "cdragon_rune_full": pass_all,
             "cdragon_profile_icon_full": pass_all,
             "cdragon_spells_full": pass_all,
-
             "meraki_champion_by_key": pass_all,
             "meraki_item_by_id": pass_all,
         },
@@ -70,7 +68,6 @@ class Filterer:
             "summoner_v1_by_id": pass_all,
             "summoner_v1_by_account_id": pass_all,
             "summoner_v1_by_puuid": pass_all,
-
             "cdragon_tft_full": pass_all,
             "cdragon_profile_icon_full": pass_all,
         },
@@ -79,7 +76,7 @@ class Filterer:
             "match_v1_matchlist": pass_all,
             "match_v1_recent": pass_all,
             "content_v1_contents": pass_all,
-        }
+        },
     }
 
     def __init__(self, game, custom_filters: Dict):
@@ -103,5 +100,7 @@ class Filterer:
         try:
             return self.filters[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARN: A non defined key was passed, returned True by default")
+            LOGGER.warning(
+                "[Trace: Pyot Pipeline] WARN: A non defined key was passed, returned True by default"
+            )
             return pass_all

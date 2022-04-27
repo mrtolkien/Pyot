@@ -8,7 +8,6 @@ class StoreType(Enum):
 
 
 class Store(ABC):
-
     @property
     def classname(self):
         return self.__class__.__name__

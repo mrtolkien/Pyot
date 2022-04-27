@@ -26,7 +26,10 @@ class DecodeError(PyotException):
     code = 602
 
     def __init__(self, origin="Unknown"):
-        PyotException.__init__(self, f"[602] AioHttp took too long to decode the response. Origin: {origin}")
+        PyotException.__init__(
+            self,
+            f"[602] AioHttp took too long to decode the response. Origin: {origin}",
+        )
 
 
 class NoContent(PyotException):
@@ -63,7 +66,9 @@ class ServerError(PyotException):
 
     def __init__(self, code, origin="Unknown"):
         self.code = code
-        PyotException.__init__(self, f"[{code}] {self.messages[code]}. Origin: {origin}")
+        PyotException.__init__(
+            self, f"[{code}] {self.messages[code]}. Origin: {origin}"
+        )
 
 
 class RateLimited(PyotException):
@@ -107,7 +112,8 @@ class Timeout(PyotException):
 
 
 class UnidentifiedResponse(PyotException):
-
     def __init__(self, code, origin="Unknown"):
         self.code = code
-        PyotException.__init__(self, f"[{code}] Unidentified Response {code}. Origin: {origin}")
+        PyotException.__init__(
+            self, f"[{code}] Unidentified Response {code}. Origin: {origin}"
+        )

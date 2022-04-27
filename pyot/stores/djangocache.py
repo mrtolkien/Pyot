@@ -17,8 +17,13 @@ class DjangoCache(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, alias: str = None, expirations: Any = None, log_level: int = 0) -> None:
-        if alias is None: raise ValueError("Argument 'ALIAS' is obligatory for Store 'DjangoCache' to be able to point the correct cache")
+    def __init__(
+        self, game: str, alias: str = None, expirations: Any = None, log_level: int = 0
+    ) -> None:
+        if alias is None:
+            raise ValueError(
+                "Argument 'ALIAS' is obligatory for Store 'DjangoCache' to be able to point the correct cache"
+            )
         self.game = game
         self.alias = alias
         self.data = caches[alias]
@@ -31,7 +36,10 @@ class DjangoCache(Store):
             if timeout == -1:
                 timeout = None
             await sync_to_async(self.data.set)(token.value, value, timeout)
-            LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] SET: {token.value}")
+            LOGGER.log(
+                self.log_level,
+                f"[Trace: {self.game} > DjangoCache > {self.alias}] SET: {token.value}",
+            )
 
     async def get(self, token: PipelineToken, **kwargs) -> Any:
         timeout = self.expirations.get_timeout(token.method)
@@ -40,12 +48,18 @@ class DjangoCache(Store):
         item = await sync_to_async(self.data.get)(token.value)
         if item is None:
             raise NotFound(token.value)
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] GET: {token.value}")
+        LOGGER.log(
+            self.log_level,
+            f"[Trace: {self.game} > DjangoCache > {self.alias}] GET: {token.value}",
+        )
         return item
 
     async def delete(self, token: PipelineToken, **kwargs) -> None:
         await sync_to_async(self.data.delete)(token.value)
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] DELETE: {token.value}")
+        LOGGER.log(
+            self.log_level,
+            f"[Trace: {self.game} > DjangoCache > {self.alias}] DELETE: {token.value}",
+        )
 
     async def contains(self, token: PipelineToken, **kwargs) -> bool:
         item = await sync_to_async(self.data.get)(token.value)
@@ -55,4 +69,7 @@ class DjangoCache(Store):
 
     async def clear(self, **kwargs):
         await sync_to_async(self.data.clear)()
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > DjangoCache > {self.alias}] CLEAR: Store has been cleared successfully")
+        LOGGER.log(
+            self.log_level,
+            f"[Trace: {self.game} > DjangoCache > {self.alias}] CLEAR: Store has been cleared successfully",
+        )

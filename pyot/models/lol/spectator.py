@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class CurrentGameBansData(PyotStatic):
     pick_turn: int
     champion_id: int
@@ -23,11 +24,13 @@ class CurrentGameBansData(PyotStatic):
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
+
         return Champion(id=self.champion_id)
 
     @property
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
+
         return MerakiChampion(id=self.champion_id)
 
 
@@ -51,32 +54,44 @@ class CurrentGameParticipantData(PyotStatic):
     position: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"bot": "is_bot", "perk_ids": "rune_ids", "perk_style": "rune_main_style", "perk_sub_style": "rune_sub_style"}
+        renamed = {
+            "bot": "is_bot",
+            "perk_ids": "rune_ids",
+            "perk_style": "rune_main_style",
+            "perk_sub_style": "rune_sub_style",
+        }
         raws = {"spell_ids", "rune_ids"}
 
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
-        return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
+
+        return Summoner(
+            id=self.summoner_id, name=self.summoner_name, platform=self.platform
+        )
 
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
+
         return Champion(id=self.champion_id)
 
     @property
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
+
         return MerakiChampion(id=self.champion_id)
 
     @property
     def profile_icon(self) -> "ProfileIcon":
         from .profileicon import ProfileIcon
+
         return ProfileIcon(id=self.profile_icon_id)
 
     @property
     def runes(self) -> List["Rune"]:
         from .rune import Rune
+
         mutable = []
         for i in self.rune_ids:
             mutable.append(Rune(id=i))
@@ -85,6 +100,7 @@ class CurrentGameParticipantData(PyotStatic):
     @property
     def spells(self) -> List["Spell"]:
         from .spell import Spell
+
         mutable = []
         for i in self.spell_ids:
             mutable.append(Spell(id=i))
@@ -107,26 +123,31 @@ class FeaturedGameParticipantData(PyotStatic):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(name=self.summoner_name, platform=self.platform)
 
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
+
         return Champion(id=self.champion_id)
 
     @property
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
+
         return MerakiChampion(id=self.champion_id)
 
     @property
     def profile_icon(self) -> "ProfileIcon":
         from .profileicon import ProfileIcon
+
         return ProfileIcon(id=self.profile_icon_id)
 
     @property
     def spells(self) -> List["Spell"]:
         from .spell import Spell
+
         mutable = []
         for i in self.spell_ids:
             mutable.append(Spell(id=i))
@@ -150,7 +171,7 @@ class FeaturedGameData(PyotStatic):
     type: str
     mode: str
     start_time_millis: int
-    length_secs: int #not milliseconds
+    length_secs: int  # not milliseconds
     map_id: int
     platform: str
     queue_id: int
@@ -158,12 +179,19 @@ class FeaturedGameData(PyotStatic):
     teams: List[FeaturedGameTeamData]
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_id": "id", "game_type": "type", "game_start_time": "start_time_millis", "game_mode": "mode",
-            "game_length": "length_secs", "platform_id": "platform", "game_queue_config_id": "queue_id"}
+        renamed = {
+            "game_id": "id",
+            "game_type": "type",
+            "game_start_time": "start_time_millis",
+            "game_mode": "mode",
+            "game_length": "length_secs",
+            "platform_id": "platform",
+            "game_queue_config_id": "queue_id",
+        }
 
     @property
     def start_time(self) -> datetime:
-        return datetime.fromtimestamp(self.start_time_millis//1000)
+        return datetime.fromtimestamp(self.start_time_millis // 1000)
 
     @property
     def length(self) -> timedelta:
@@ -194,6 +222,7 @@ class FeaturedGameData(PyotStatic):
 
 # PYOT CORE OBJECTS
 
+
 class CurrentGame(FeaturedGameData, PyotCore):
     summoner_id: str
     teams: List[CurrentGameTeamData]
@@ -201,12 +230,17 @@ class CurrentGame(FeaturedGameData, PyotCore):
     class Meta(FeaturedGameData.Meta, PyotCore.Meta):
         rules = {"spectator_v4_current_game": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(
+        self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM
+    ):
         self.initialize(locals())
 
     def transform(self, data):
         data = data.copy()
-        data["teams"] = [{"id": 100, "bans": [], "participants": []}, {"id": 200, "bans": [], "participants": []}]
+        data["teams"] = [
+            {"id": 100, "bans": [], "participants": []},
+            {"id": 200, "bans": [], "participants": []},
+        ]
         data["observersKey"] = data.pop("observers", None)["encryptionKey"]
         for ban in data.pop("bannedChampions", []):
             if ban["teamId"] == 100:
@@ -248,6 +282,7 @@ class CurrentGame(FeaturedGameData, PyotCore):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(id=self.summoner_id, platform=self.platform)
 
 
@@ -257,7 +292,10 @@ class FeaturedGames(PyotCore):
 
     class Meta(PyotCore.Meta):
         rules = {"spectator_v4_featured_games": []}
-        renamed = {"client_refresh_interval": "refresh_interval_secs", "game_list": "games"}
+        renamed = {
+            "client_refresh_interval": "refresh_interval_secs",
+            "game_list": "games",
+        }
 
     def __getitem__(self, item):
         if not isinstance(item, int):

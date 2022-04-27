@@ -6,7 +6,6 @@ import aiohttp
 
 
 class ChampionKeysCache:
-
     def __init__(self) -> None:
         self.cached_data = {
             "id_by_key": {},
@@ -20,7 +19,7 @@ class ChampionKeysCache:
         self.last_updated = datetime.now() - timedelta(days=1)
 
     def __str__(self) -> str:
-        return 'ChampionKeysCache()'
+        return "ChampionKeysCache()"
 
     @async_property
     async def data(self):
@@ -33,7 +32,9 @@ class ChampionKeysCache:
             async with aiohttp.ClientSession() as session:
                 response = await session.request("GET", url)
                 if not (response and response.status == 200):
-                    raise RuntimeError(f"Failed to pull champion summary ({response.status})")
+                    raise RuntimeError(
+                        f"Failed to pull champion summary ({response.status})"
+                    )
                 dic = await response.json(encoding="utf-8")
             data = {
                 "id_by_key": {},
@@ -61,36 +62,36 @@ champion_keys_cache = ChampionKeysCache()
 
 
 async def id_by_key(value: str) -> int:
-    '''Get champion id by key'''
+    """Get champion id by key"""
     data = await champion_keys_cache.data
     return data["id_by_key"][value]
 
 
 async def id_by_name(value: str) -> int:
-    '''Get champion id by name'''
+    """Get champion id by name"""
     data = await champion_keys_cache.data
     return data["id_by_name"][value]
 
 
 async def key_by_id(value: int) -> str:
-    '''Get champion key by id'''
+    """Get champion key by id"""
     data = await champion_keys_cache.data
     return data["key_by_id"][value]
 
 
 async def key_by_name(value: str) -> str:
-    '''Get champion key by name'''
+    """Get champion key by name"""
     data = await champion_keys_cache.data
     return data["key_by_name"][value]
 
 
 async def name_by_id(value: int) -> str:
-    '''Get champion name by id'''
+    """Get champion name by id"""
     data = await champion_keys_cache.data
     return data["name_by_id"][value]
 
 
 async def name_by_key(value: str) -> str:
-    '''Get champion name by key'''
+    """Get champion name by key"""
     data = await champion_keys_cache.data
     return data["name_by_key"][value]

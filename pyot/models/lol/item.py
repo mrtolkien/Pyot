@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 # PYOT CORE OBJECT
 
+
 class Item(PyotCore):
     id: int
     name: str
@@ -37,11 +38,25 @@ class Item(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_item_full": ["version", "locale", "?id"]}
         raws = {"from_ids", "to_ids", "categories", "maps", "modes"}
-        renamed = {"from":"from_ids", "to": "to_ids", "map_string_id_inclusions": "maps", "mode_name_inclusions": "modes",
-            "required_buff_currency_name": "required_currency", "required_buff_currency_cost": "required_currency_cost",
-            "required_champion": "required_champion_key", "price": "self_cost", "price_total": "total_cost", "special_recipe": "special_recipe_id"}
+        renamed = {
+            "from": "from_ids",
+            "to": "to_ids",
+            "map_string_id_inclusions": "maps",
+            "mode_name_inclusions": "modes",
+            "required_buff_currency_name": "required_currency",
+            "required_buff_currency_cost": "required_currency_cost",
+            "required_champion": "required_champion_key",
+            "price": "self_cost",
+            "price_total": "total_cost",
+            "special_recipe": "special_recipe_id",
+        }
 
-    def __init__(self, id: int = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        id: int = None,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     @cache_indexes
@@ -73,12 +88,16 @@ class Item(PyotCore):
     @property
     def meraki_item(self) -> "MerakiItem":
         from .merakiitem import MerakiItem
+
         return MerakiItem(id=self.id)
 
     @property
     def required_champion(self) -> "Champion":
         from .champion import Champion
-        return Champion(key=self.required_champion_key, version=self.version, locale=self.locale)
+
+        return Champion(
+            key=self.required_champion_key, version=self.version, locale=self.locale
+        )
 
     @property
     def special_recipe(self) -> "Item":
@@ -91,7 +110,11 @@ class Items(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_item_full": ["version", "locale"]}
 
-    def __init__(self, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):

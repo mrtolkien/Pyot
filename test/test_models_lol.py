@@ -26,7 +26,9 @@ async def test_championmastery():
     o = await lol.ChampionMasteries(summoner_id=s.id, platform="na1").get()
     assert_walkable(o)
     assert_types(o)
-    o = await lol.ChampionMastery(summoner_id=s.id, champion_id=39, platform="na1").get()
+    o = await lol.ChampionMastery(
+        summoner_id=s.id, champion_id=39, platform="na1"
+    ).get()
     assert_walkable(o)
     assert_types(o)
 
@@ -73,7 +75,13 @@ async def test_league():
     o = await lol.SummonerLeague(summoner_id=s.id, platform="na1").get()
     assert_walkable(o)
     assert_types(o)
-    o = await lol.DivisionLeague(tier="GOLD", division="I", queue="RANKED_SOLO_5x5", platform="na1").query(page=1).get()
+    o = (
+        await lol.DivisionLeague(
+            tier="GOLD", division="I", queue="RANKED_SOLO_5x5", platform="na1"
+        )
+        .query(page=1)
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
 
@@ -81,16 +89,34 @@ async def test_league():
 @async_to_sync
 async def test_match():
     s = await lol.Summoner(name="Morimorph", platform="na1").get()
-    o = await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform)).query(count=100, queue=420).get()
+    o = (
+        await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform))
+        .query(count=100, queue=420)
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
-    o = await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform)).query(count=100, queue=420, start_time=int((datetime.now() - timedelta(days=200)).timestamp())).get()
+    o = (
+        await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform))
+        .query(
+            count=100,
+            queue=420,
+            start_time=int((datetime.now() - timedelta(days=200)).timestamp()),
+        )
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
-    o = await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform)).query(count=100, queue=420, start_time=datetime.now() - timedelta(days=200)).get()
+    o = (
+        await lol.MatchHistory(puuid=s.puuid, region=platform_to_region(s.platform))
+        .query(count=100, queue=420, start_time=datetime.now() - timedelta(days=200))
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
-    o = await s.match_history.query(count=100, queue=420, start_time=datetime.now() - timedelta(days=200)).get()
+    o = await s.match_history.query(
+        count=100, queue=420, start_time=datetime.now() - timedelta(days=200)
+    ).get()
     assert_walkable(o)
     assert_types(o)
     for ind in range(2):

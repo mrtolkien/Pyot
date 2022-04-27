@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class MerakiItemStatDetailData(PyotStatic):
     flat: float
     percent: float
@@ -75,6 +76,7 @@ class MerakiItemShopData(PyotStatic):
 
 # PYOT CORE OBJECTS
 
+
 class MerakiItem(PyotCore):
     name: str
     id: int
@@ -100,8 +102,12 @@ class MerakiItem(PyotCore):
         server_type = "locale"
         rules = {"meraki_item_by_id": ["id"]}
         raws = {"builds_from_ids", "builds_into_ids", "nicknames", "rank"}
-        renamed = {"builds_from": "builds_from_ids", "builds_into": "builds_into_ids",
-            "required_champion": "required_champion_key", "special_recipe": "special_recipe_id"}
+        renamed = {
+            "builds_from": "builds_from_ids",
+            "builds_into": "builds_into_ids",
+            "required_champion": "required_champion_key",
+            "special_recipe": "special_recipe_id",
+        }
 
     def __init__(self, id: int = None):
         self.initialize({"locale": "default", **locals()})
@@ -109,6 +115,7 @@ class MerakiItem(PyotCore):
     @property
     def item(self) -> "Item":
         from .item import Item
+
         return Item(id=self.id, locale="en_us")
 
     @property
@@ -128,6 +135,7 @@ class MerakiItem(PyotCore):
     @property
     def required_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
+
         return MerakiChampion(id=self.required_champion_key)
 
     @property

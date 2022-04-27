@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 # PYOT CORE OBJECTS
 
+
 class ChampionRotation(PyotCore):
     free_champion_ids: List[int]
     free_newie_champion_ids: List[int]
@@ -19,7 +20,10 @@ class ChampionRotation(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"champion_v3_rotation": []}
         raws = {"free_champion_ids", "free_newie_champion_ids"}
-        renamed = {"free_champion_ids_for_new_players": "free_newie_champion_ids", "max_new_player_level": "newie_max_level"}
+        renamed = {
+            "free_champion_ids_for_new_players": "free_newie_champion_ids",
+            "max_new_player_level": "newie_max_level",
+        }
 
     def __init__(self, platform: str = models.lol.DEFAULT_PLATFORM):
         self.initialize(locals())
@@ -27,6 +31,7 @@ class ChampionRotation(PyotCore):
     @property
     def free_champions(self) -> List["Champion"]:
         from .champion import Champion
+
         mutable = []
         for i in self.free_champion_ids:
             mutable.append(Champion(id=i))
@@ -35,6 +40,7 @@ class ChampionRotation(PyotCore):
     @property
     def free_newie_champions(self) -> List["Champion"]:
         from .champion import Champion
+
         mutable = []
         for i in self.free_newie_champion_ids:
             mutable.append(Champion(id=i))
@@ -43,6 +49,7 @@ class ChampionRotation(PyotCore):
     @property
     def meraki_free_champions(self) -> List["MerakiChampion"]:
         from .merakichampion import MerakiChampion
+
         mutable = []
         for i in self.free_champion_ids:
             mutable.append(MerakiChampion(id=i))
@@ -51,6 +58,7 @@ class ChampionRotation(PyotCore):
     @property
     def meraki_free_newie_champions(self) -> List["MerakiChampion"]:
         from .merakichampion import MerakiChampion
+
         mutable = []
         for i in self.free_newie_champion_ids:
             mutable.append(MerakiChampion(id=i))

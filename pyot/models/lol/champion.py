@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class ChampionTacticalData(PyotStatic):
     style: int
     difficulty: int
@@ -146,8 +147,20 @@ class ChampionSpellData(PyotStatic):
     ammo: Dict[str, List[float]]
 
     class Meta(PyotStatic.Meta):
-        raws = {"cost", "cooldown", "range", "formulas", "coefficients", "effect_amounts", "ammo"}
-        renamed = {"spell_key": "key", "ability_icon_path": "icon_path", "dynamic_description": "long_description"}
+        raws = {
+            "cost",
+            "cooldown",
+            "range",
+            "formulas",
+            "coefficients",
+            "effect_amounts",
+            "ammo",
+        }
+        renamed = {
+            "spell_key": "key",
+            "ability_icon_path": "icon_path",
+            "dynamic_description": "long_description",
+        }
 
     @lazy_property
     def icon_abspath(self) -> str:
@@ -167,6 +180,7 @@ class ChampionAbilityData(PyotStatic):
 
 
 # PYOT CORE OBJECTS
+
 
 class Champion(PyotCore):
     id: int
@@ -191,9 +205,22 @@ class Champion(PyotCore):
             "cdragon_champion_by_id": ["version", "locale", "id"],
         }
         raws = {"roles", "recommended_item_defaults"}
-        renamed = {"alias": "key", "short_bio": "lore", "playstyle_info": "play_style", "square_portrait_path": "square_path", "spells": "abilities"}
+        renamed = {
+            "alias": "key",
+            "short_bio": "lore",
+            "playstyle_info": "play_style",
+            "square_portrait_path": "square_path",
+            "spells": "abilities",
+        }
 
-    def __init__(self, id: int = None, key: str = None, name: str = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        id: int = None,
+        key: str = None,
+        name: str = None,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     async def setup(self):
@@ -237,6 +264,7 @@ class Champion(PyotCore):
     @property
     def meraki_champion(self) -> "MerakiChampion":
         from .merakichampion import MerakiChampion
+
         return MerakiChampion(id=self.id)
 
 
@@ -246,7 +274,11 @@ class Champions(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_champion_summary": ["version", "locale"]}
 
-    def __init__(self, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):

@@ -11,12 +11,14 @@ from .base import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECTS
 
+
 class CardAssetData(PyotStatic):
     game_absolute_path: str
     full_absolute_path: str
 
 
 # PYOT CORE OBJECTS
+
 
 class Card(PyotCore):
     associated_card_codes: List[str]
@@ -54,11 +56,24 @@ class Card(PyotCore):
     subcode: str
 
     class Meta(PyotCore.Meta):
-        raws = {"keywords", "keyword_refs", "subtypes", "associated_card_codes", "associated_card_refs", "regions", "region_refs"}
+        raws = {
+            "keywords",
+            "keyword_refs",
+            "subtypes",
+            "associated_card_codes",
+            "associated_card_refs",
+            "regions",
+            "region_refs",
+        }
         renamed = {"card_code": "code", "associated_cards": "associated_card_codes"}
         rules = {"ddragon_lor_set_data": ["set", "?code", "version", "locale"]}
 
-    def __init__(self, code: str = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        code: str = None,
+        version: str = models.lor.DEFAULT_VERSION,
+        locale: str = models.lor.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
         if code:
             self.set = int(code[:2])
@@ -81,7 +96,10 @@ class Card(PyotCore):
 
     @property
     def associated_cards(self) -> List["Card"]:
-        return [Card(code=code, version=self.version, locale=self.locale) for code in self.associated_card_codes]
+        return [
+            Card(code=code, version=self.version, locale=self.locale)
+            for code in self.associated_card_codes
+        ]
 
 
 class Cards(PyotCore):
@@ -90,7 +108,12 @@ class Cards(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"ddragon_lor_set_data": ["set", "version", "locale"]}
 
-    def __init__(self, set: int = None, version: str = models.lor.DEFAULT_VERSION, locale: str = models.lor.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        set: int = None,
+        version: str = models.lor.DEFAULT_VERSION,
+        locale: str = models.lor.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -110,6 +133,7 @@ class Cards(PyotCore):
 
 ## PYOT CONTAINERS
 
+
 class Batch(PyotUtilBase):
     code: str
     count: int
@@ -126,7 +150,9 @@ class Batch(PyotUtilBase):
             self.code = card_code_and_count[1]
             self.count = card_code_and_count[0]
         else:
-            raise RuntimeError("Batch takes at least 'code' or 'raw' string, prioritizing 'code'")
+            raise RuntimeError(
+                "Batch takes at least 'code' or 'raw' string, prioritizing 'code'"
+            )
         self.set = int(self.code[:2])
         self.faction = self.code[2:4]
         self.number = int(self.code[4:])
@@ -135,18 +161,22 @@ class Batch(PyotUtilBase):
         return f"{self.count}:{self.code}"
 
     def add(self, amount: int = 1):
-        '''Add a copy to the batch, `amount` may be passed to add more than 1 copy.'''
+        """Add a copy to the batch, `amount` may be passed to add more than 1 copy."""
         if self.count + amount <= 3:
             self.count += amount
         else:
-            raise RuntimeError("The batch cannot contain more than 3 copies in the current version")
+            raise RuntimeError(
+                "The batch cannot contain more than 3 copies in the current version"
+            )
 
     def remove(self, amount: int = 1):
-        '''Remove a copy from the batch, `amount` may be passed to remove more than 1 copy.'''
+        """Remove a copy from the batch, `amount` may be passed to remove more than 1 copy."""
         if self.count > amount:
             self.count -= 1
         else:
-            raise RuntimeError("The batch needs to have at least 1 copy, delete it instead")
+            raise RuntimeError(
+                "The batch needs to have at least 1 copy, delete it instead"
+            )
 
     def dict(self):
         return {
@@ -186,30 +216,32 @@ class Deck(PyotUtilBase):
         return len(self.batches)
 
     def append(self, batch: Union[Batch, str]):
-        '''Appends a Batch object or CardCodeAndCount string to the Deck.'''
+        """Appends a Batch object or CardCodeAndCount string to the Deck."""
         if isinstance(batch, Batch):
             self.batches.append(batch)
             return
         card_code_and_count = batch.split(":")
-        self.batches.append(Batch(code=card_code_and_count[1], count=card_code_and_count[0]))
+        self.batches.append(
+            Batch(code=card_code_and_count[1], count=card_code_and_count[0])
+        )
 
     def pop(self, ind: int = -1) -> Batch:
-        '''Remove and return a Batch object by index.'''
+        """Remove and return a Batch object by index."""
         return self.batches.pop(ind)
 
     def pull(self, card_code: str):
-        '''Remove and return a Batch object by code.'''
+        """Remove and return a Batch object by code."""
         for ind, batch in enumerate(self.batches):
             if batch.code == card_code:
                 return self.batches.pop(ind)
 
     def encode(self) -> str:
-        '''Encode the content in `self.batches`, set the code and return it.'''
+        """Encode the content in `self.batches`, set the code and return it."""
         self.code = encode_deck([batch_to_ccac(batch) for batch in self.batches])
         return self.code
 
     def decode(self):
-        '''Decode the string in `self.code`, rebuild the batches and return self.'''
+        """Decode the string in `self.code`, rebuild the batches and return self."""
         lor_deck = decode_deck(self.code)
         self.batches = []
         for lor_card in lor_deck:

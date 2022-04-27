@@ -17,8 +17,13 @@ class ModelConf(ABC):
 
 
 class Model:
-
-    def __init__(self, default_platform: str, default_region: str, default_locale: str, default_version: str) -> None:
+    def __init__(
+        self,
+        default_platform: str,
+        default_region: str,
+        default_locale: str,
+        default_version: str,
+    ) -> None:
         self.default_platform = default_platform
         self.default_region = default_region
         self.default_locale = default_locale
@@ -45,11 +50,13 @@ class Model:
         return self.default_version
 
 
-models: ConfDict[str, Model] = ConfDict(Model, "Model '{0}' is inactive or does not exist")
+models: ConfDict[str, Model] = ConfDict(
+    Model, "Model '{0}' is inactive or does not exist"
+)
 
 
 def activate_model(name: str):
-    '''Make the settings take effect.'''
+    """Make the settings take effect."""
 
     keys = {"default_platform", "default_region", "default_locale", "default_version"}
 
@@ -62,9 +69,16 @@ def activate_model(name: str):
                 continue
             raise ValueError(f"Missing value for '{key}' in {cls} conf")
         if name in models or hasattr(models, name):
-            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate model '{name}' was ignored (model already active)")
+            LOGGER.warning(
+                f"[Trace: Pyot Setup] WARN: An attempt to activate model '{name}' was ignored (model already active)"
+            )
             return cls
-        models[name] = Model(cls.default_platform, cls.default_region, cls.default_locale, cls.default_version)
+        models[name] = Model(
+            cls.default_platform,
+            cls.default_region,
+            cls.default_locale,
+            cls.default_version,
+        )
         return cls
 
     return wrapper

@@ -10,7 +10,14 @@ class PipelineToken:
     params: Dict[str, str]
     queries: Dict[str, Any]
 
-    def __init__(self, model: str, server: str, method: str, params: Dict[str, str], queries: Dict[str, Any]):
+    def __init__(
+        self,
+        model: str,
+        server: str,
+        method: str,
+        params: Dict[str, str],
+        queries: Dict[str, Any],
+    ):
         self.model = model
         self.server = server
         self.method = method
@@ -21,7 +28,9 @@ class PipelineToken:
         else:
             self.parent = f"{self.model}/{self.method}"
         self.value = f"{self.parent}{self.parse_params(self.params)}{self.parse_queries(self.queries)}"
-        self.hashval = hash((self.model, self.server, self.method, str(self.params), str(self.queries)))
+        self.hashval = hash(
+            (self.model, self.server, self.method, str(self.params), str(self.queries))
+        )
 
     def __hash__(self):
         return self.hashval
@@ -46,5 +55,7 @@ class PipelineToken:
         }
 
     @classmethod
-    def load(cls, dic) -> 'PipelineToken':
-        return cls(dic["model"], dic["server"], dic["method"], dic["params"], dic["queries"])
+    def load(cls, dic) -> "PipelineToken":
+        return cls(
+            dic["model"], dic["server"], dic["method"], dic["params"], dic["queries"]
+        )

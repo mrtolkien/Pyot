@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class MatchMetadataData(PyotStatic):
     id: str
     data_version: str
@@ -26,7 +27,11 @@ class MatchMetadataData(PyotStatic):
     @property
     def participants(self) -> List["Summoner"]:
         from .summoner import Summoner
-        return [Summoner(puuid=i, platform=self.id.split('_')[0]) for i in self.participant_puuids]
+
+        return [
+            Summoner(puuid=i, platform=self.id.split("_")[0])
+            for i in self.participant_puuids
+        ]
 
 
 class MatchInfoCompanionData(PyotStatic):
@@ -45,6 +50,7 @@ class MatchInfoTraitData(PyotStatic):
     @property
     def trait(self) -> "Trait":
         from .trait import Trait
+
         return Trait(key=self.name)
 
 
@@ -63,11 +69,13 @@ class MatchInfoUnitData(PyotStatic):
     @property
     def items(self) -> List["Item"]:
         from .item import Item
+
         return [Item(id=i) for i in self.item_ids]
 
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
+
         return Champion(key=self.champion_key)
 
 
@@ -95,6 +103,7 @@ class MatchInfoParticipantData(PyotStatic):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(puuid=self.puuid, platform=self._pyot_calculated_platform)
 
 
@@ -109,11 +118,16 @@ class MatchInfoData(PyotStatic):
     tft_set_number: int
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_datetime": "datetime_millis", "game_length": "length_secs", "game_variation": "variation", "game_version": "version"}
+        renamed = {
+            "game_datetime": "datetime_millis",
+            "game_length": "length_secs",
+            "game_variation": "variation",
+            "game_version": "version",
+        }
 
     @property
     def datetime(self) -> datetime:
-        return datetime.fromtimestamp(self.datetime_millis//1000)
+        return datetime.fromtimestamp(self.datetime_millis // 1000)
 
     @property
     def length(self) -> timedelta:
@@ -121,6 +135,7 @@ class MatchInfoData(PyotStatic):
 
 
 # PYOT CORE OBJECTS
+
 
 class Match(PyotCore):
     id: str
@@ -163,7 +178,7 @@ class MatchHistory(PyotCore):
         self.initialize(locals())
 
     def query(self, count: int = 20):
-        '''Query parameters setter.'''
+        """Query parameters setter."""
         self._meta.query = parse_camelcase(locals())
         return self
 
@@ -174,10 +189,15 @@ class MatchHistory(PyotCore):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         try:
-            return Summoner(account_id=self.account_id, platform=self.ids[0].split("_")[0])
+            return Summoner(
+                account_id=self.account_id, platform=self.ids[0].split("_")[0]
+            )
         except (AttributeError, IndexError) as e:
-            raise AttributeError("Match history is empty, could not identify platform from list") from e
+            raise AttributeError(
+                "Match history is empty, could not identify platform from list"
+            ) from e
 
     def transform(self, data):
         return {"ids": data}

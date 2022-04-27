@@ -11,22 +11,32 @@ from .base import BaseLimiter, LimiterToken
 
 
 class RedisLimiter(BaseLimiter):
-
-    def __init__(self, game: str, api_key: str, host='127.0.0.1', port=6379, db=0, limiting_share=1, **kwargs):
+    def __init__(
+        self,
+        game: str,
+        api_key: str,
+        host="127.0.0.1",
+        port=6379,
+        db=0,
+        limiting_share=1,
+        **kwargs,
+    ):
         self.game = game
         self.api_key = api_key
         self.api_hash = api_key[-5:]
         self.limiting_share = limiting_share
         self.lock = SealLock()
         self.redis = EventLoopFactory(
-            factory=lambda: aioredis.create_redis_pool(f"redis://{host}:{port}/{db}", **kwargs),
+            factory=lambda: aioredis.create_redis_pool(
+                f"redis://{host}:{port}/{db}", **kwargs
+            ),
             callback=lambda pool: pool.close(),
         )
         self.shas: Dict[str, str] = None
         self.latency = 0.002
 
     async def register_scripts(self):
-        get_token_lua = '''
+        get_token_lua = """
         local sleep = 0
         local allowed = {}
         local pinging_list = {}
@@ -121,8 +131,8 @@ class RedisLimiter(BaseLimiter):
             allowed_string = allowed_string..tostring(allowed[i])..";"
         end
         return {tostring(sleep), allowed_string, pinging_string}
-        '''
-        sync_rates_ping_lua = '''
+        """
+        sync_rates_ping_lua = """
         local now = tonumber(ARGV[1])
         for i=1, #KEYS do
             local keyi = i * 4 - 3
@@ -143,8 +153,8 @@ class RedisLimiter(BaseLimiter):
             end
         end
         return 1
-        '''
-        sync_rates_land_lua = '''
+        """
+        sync_rates_land_lua = """
         local epoch = tonumber(ARGV[1])
         for i=1, #KEYS do
             local prefix_i = KEYS[i]
@@ -154,19 +164,19 @@ class RedisLimiter(BaseLimiter):
             end
         end
         return 1
-        '''
-        ping_fail_lua = '''
+        """
+        ping_fail_lua = """
         for i=1, #KEYS do
             redis.call("SET", KEYS[i]..":pinging", 0)
         end
-        '''
-        freeze_rates_lua = '''
+        """
+        freeze_rates_lua = """
         local now = tonumber(ARGV[1])
         local time = ARGV[2]
         for i=1, #KEYS do
             redis.call("SET", KEYS[i]..":freeze", tostring(now + time))
         end
-        '''
+        """
         redis = await self.redis.get()
         return {
             "get_token": await redis.script_load(get_token_lua),
@@ -186,26 +196,30 @@ class RedisLimiter(BaseLimiter):
         return self.shas[key]
 
     async def get_token(self, server: str, method: str):
-        app_prefix = f'{self.api_hash}:{self.game}:{server}'
-        method_prefix = f'{self.api_hash}:{self.game}:{server}:{method}'
+        app_prefix = f"{self.api_hash}:{self.game}:{server}"
+        method_prefix = f"{self.api_hash}:{self.game}:{server}:{method}"
         redis = await self.redis.get()
         # print(await redis.evalsha(await self.get_sha("test2")))
         sha = await self.get_sha("get_token")
         now = time() + self.latency + 0.005
         # timeit = time()
-        return_list: List[bytes] = await redis.evalsha(sha, [app_prefix, method_prefix], [str(now)])
+        return_list: List[bytes] = await redis.evalsha(
+            sha, [app_prefix, method_prefix], [str(now)]
+        )
         # print(time() - timeit)
-        sleep = float(return_list[0].decode('utf-8'))
-        allowed = return_list[1].decode('utf-8').split(";")[:-1]
+        sleep = float(return_list[0].decode("utf-8"))
+        allowed = return_list[1].decode("utf-8").split(";")[:-1]
         pinging_list = []
-        for pinging in return_list[2].decode('utf-8').split(";")[:-1]:
+        for pinging in return_list[2].decode("utf-8").split(";")[:-1]:
             pings = pinging.split(",")[:-1]
             pings[-1] = int(pings[-1])
             pinging_list.append(pings)
         # print(return_list, allowed, pinging_list)
         return LimiterToken(server, method, now, sleep, allowed, pinging_list)
 
-    async def sync_rates(self, token: LimiterToken, response: ClientResponse) -> Dict[str, List[List[int]]]:
+    async def sync_rates(
+        self, token: LimiterToken, response: ClientResponse
+    ) -> Dict[str, List[List[int]]]:
         header = self.parse_headers(response)
         if header is None:
             await self.ping_fail(token)
@@ -217,14 +231,14 @@ class RedisLimiter(BaseLimiter):
         if token.pinging:
             for (prefix_i, type, i) in token.pinging:
                 keys.append(prefix_i)
-                if i >= len(header[f'{type}_limit']):
+                if i >= len(header[f"{type}_limit"]):
                     for _ in range(4):
                         args.append(0)
                 else:
                     args.append(1)
-                    args.append(header[f'{type}_limit'][i][0])
-                    args.append(header[f'{type}_limit'][i][1])
-                    args.append(header[f'{type}_count'][i][0])
+                    args.append(header[f"{type}_limit"][i][0])
+                    args.append(header[f"{type}_limit"][i][1])
+                    args.append(header[f"{type}_count"][i][0])
             # print(args)
             sha = await self.get_sha("sync_rates.ping")
             await redis.evalsha(sha, keys, args)
@@ -238,7 +252,9 @@ class RedisLimiter(BaseLimiter):
         sha = await self.get_sha("ping_fail")
         await redis.evalsha(sha, [pinging[0] for pinging in token.pinging], [])
 
-    async def freeze_rates(self, token: LimiterToken, response: ClientResponse) -> Dict[str, Union[str, int]]:
+    async def freeze_rates(
+        self, token: LimiterToken, response: ClientResponse
+    ) -> Dict[str, Union[str, int]]:
         header = self.parse_429(response)
         redis = await self.redis.get()
         sha = await self.get_sha("freeze_rates")

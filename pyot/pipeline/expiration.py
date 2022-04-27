@@ -51,14 +51,12 @@ class ExpirationManager:
             "tournament_v4_codes_by_code": 0,
             "tournament_v4_lobby_events": 0,
             "tournament_stub_v4_lobby_events": 0,
-
             "cdragon_champion_by_id": td(minutes=20),
             "cdragon_champion_summary": td(minutes=20),
             "cdragon_item_full": td(minutes=20),
             "cdragon_rune_full": td(minutes=20),
             "cdragon_profile_icon_full": td(minutes=20),
             "cdragon_spells_full": td(minutes=20),
-
             "meraki_champion_by_key": td(minutes=20),
             "meraki_item_by_id": td(minutes=20),
         },
@@ -82,7 +80,6 @@ class ExpirationManager:
             "summoner_v1_by_id": 0,
             "summoner_v1_by_account_id": 0,
             "summoner_v1_by_puuid": 0,
-
             "cdragon_tft_full": td(minutes=20),
             "cdragon_profile_icon_full": td(minutes=20),
         },
@@ -93,7 +90,7 @@ class ExpirationManager:
             "content_v1_contents": 0,
             "ranked_v1_leaderboards": 0,
             "status_v1_platform_data": 0,
-        }
+        },
     }
 
     def __init__(self, game: str, custom_expirations: Dict):
@@ -115,14 +112,18 @@ class ExpirationManager:
                 try:
                     expirations_[key] = int(time)
                 except Exception as e:
-                    raise AttributeError(f"Expiration value type error, {type(expirations_[key])} was given") from e
+                    raise AttributeError(
+                        f"Expiration value type error, {type(expirations_[key])} was given"
+                    ) from e
         return expirations_
 
     def get_timeout(self, key):
         try:
             return self.expirations[key]
         except KeyError:
-            LOGGER.warning("[Trace: Pyot Pipeline] WARN: A non defined expiration token was passed, returned 0 by default")
+            LOGGER.warning(
+                "[Trace: Pyot Pipeline] WARN: A non defined expiration token was passed, returned 0 by default"
+            )
             return 0
 
     def __iter__(self):

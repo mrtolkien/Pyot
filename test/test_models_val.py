@@ -1,4 +1,3 @@
-
 from pyot.models import val
 from pyot.utils.sync import async_to_sync
 
@@ -15,12 +14,18 @@ async def test_content():
 @async_to_sync
 async def test_ranked():
     c = await val.Content().get()
-    latest_act = next(act for act in reversed(c.acts) if act.is_active and act.type == 'act')
+    latest_act = next(
+        act for act in reversed(c.acts) if act.is_active and act.type == "act"
+    )
     act_id = latest_act.id
     o = await val.Leaderboard(act_id=act_id, platform="eu").get()
     assert_walkable(o)
     assert_types(o)
-    o = await val.Leaderboard(act_id=act_id, platform="eu").query(size=200, start_index=220).get()
+    o = (
+        await val.Leaderboard(act_id=act_id, platform="eu")
+        .query(size=200, start_index=220)
+        .get()
+    )
     assert_walkable(o)
     assert_types(o)
 
@@ -28,7 +33,9 @@ async def test_ranked():
 @async_to_sync
 async def test_match():
     c = await val.Content().get()
-    latest_act = next(act for act in reversed(c.acts) if act.is_active and act.type == 'act')
+    latest_act = next(
+        act for act in reversed(c.acts) if act.is_active and act.type == "act"
+    )
     act_id = latest_act.id
     l = await val.Leaderboard(act_id=act_id, platform="eu").get()
     o = await val.MatchHistory(puuid=l[0].puuid, platform="eu").get()

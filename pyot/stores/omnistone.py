@@ -19,7 +19,14 @@ class Omnistone(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, max_entries: int = 10000, cull_frecuency: int = 2, expirations: Any = None, log_level: int = 0) -> None:
+    def __init__(
+        self,
+        game: str,
+        max_entries: int = 10000,
+        cull_frecuency: int = 2,
+        expirations: Any = None,
+        log_level: int = 0,
+    ) -> None:
         self.game = game
         self.data = dict()
         self.lock = SealLock()
@@ -37,13 +44,24 @@ class Omnistone(Store):
                     timeout = datetime.timedelta(seconds=timeout)
                 if await self._allowed():
                     value = pickle.dumps(value)
-                    self.data[token.value] = (value, timeout, datetime.datetime.now(), datetime.datetime.now())
-                    LOGGER.log(self.log_level, f"[Trace: {self.game} > Omnistone] SET: {token.value}")
+                    self.data[token.value] = (
+                        value,
+                        timeout,
+                        datetime.datetime.now(),
+                        datetime.datetime.now(),
+                    )
+                    LOGGER.log(
+                        self.log_level,
+                        f"[Trace: {self.game} > Omnistone] SET: {token.value}",
+                    )
             if len(self.data) > self.max_entries and await self._allowed():
                 async with self.lock:
                     self.cull_lock = [True, datetime.datetime.now()]
                 await self.expire()
-                if len(self.data) > self.max_entries - self.max_entries/self.cull_frecuency:
+                if (
+                    len(self.data)
+                    > self.max_entries - self.max_entries / self.cull_frecuency
+                ):
                     await self.cull()
 
     async def get(self, token: PipelineToken, expiring: bool = False, **kwargs) -> Any:
@@ -56,7 +74,10 @@ class Omnistone(Store):
             except KeyError as e:
                 raise NotFound(token.value) from e
             if not expiring:
-                LOGGER.log(self.log_level, f"[Trace: {self.game} > Omnistone] GET: {token.value}")
+                LOGGER.log(
+                    self.log_level,
+                    f"[Trace: {self.game} > Omnistone] GET: {token.value}",
+                )
 
             now = datetime.datetime.now()
             if timeout == -1:
@@ -66,7 +87,8 @@ class Omnistone(Store):
             elif now > entered + timeout:
                 try:
                     del self.data[token.value]
-                except KeyError: pass
+                except KeyError:
+                    pass
                 raise NotFound(token.value)
             else:
                 self.data[token.value] = (item, timeout, entered, now)
@@ -76,7 +98,10 @@ class Omnistone(Store):
     async def delete(self, token: PipelineToken, **kwargs) -> None:
         try:
             del self.data[token.value]
-            LOGGER.log(self.log_level, f"[Trace: {self.game} > Omnistone] DELETE: {token.value}")
+            LOGGER.log(
+                self.log_level,
+                f"[Trace: {self.game} > Omnistone] DELETE: {token.value}",
+            )
         except KeyError as e:
             raise NotFound(token.value) from e
 
@@ -87,12 +112,17 @@ class Omnistone(Store):
     async def clear(self, **kwargs):
         async with self.lock:
             self.data = {}
-            LOGGER.log(self.log_level, f"[Trace: {self.game} > Omnistone] CLEAR: Store has been cleared successfully")
+            LOGGER.log(
+                self.log_level,
+                f"[Trace: {self.game} > Omnistone] CLEAR: Store has been cleared successfully",
+            )
 
     async def _allowed(self):
         if not self.cull_lock[0]:
             return True
-        elif self.cull_lock[0] and datetime.datetime.now() > self.cull_lock[1] + datetime.timedelta(seconds=30):
+        elif self.cull_lock[0] and datetime.datetime.now() > self.cull_lock[
+            1
+        ] + datetime.timedelta(seconds=30):
             self.cull_lock[0] = False
             return True
         else:
@@ -102,7 +132,7 @@ class Omnistone(Store):
         async with self.lock:
             data = copy.copy(self.data)
         lru = sorted(data.keys(), key=lambda x: data[x][3])
-        for token in lru[:int(len(data)/self.cull_frecuency)]:
+        for token in lru[: int(len(data) / self.cull_frecuency)]:
             await self.delete(token)
         self.cull_lock[0] = False
 

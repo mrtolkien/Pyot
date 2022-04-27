@@ -2,13 +2,25 @@ from pyot.core.objects import PyotCoreBase, PyotStaticBase
 from pyot.conf.pipeline import pipelines
 
 
-MODULE_REPR = 'League of Legends'
+MODULE_REPR = "League of Legends"
 
 
 class PyotRouting:
 
     _regions = {"americas", "europe", "asia", "esports"}
-    _platforms = {"br1", "eun1", "euw1", "jp1", "kr", "la1", "la2", "na1", "oc1", "tr1", "ru"}
+    _platforms = {
+        "br1",
+        "eun1",
+        "euw1",
+        "jp1",
+        "kr",
+        "la1",
+        "la2",
+        "na1",
+        "oc1",
+        "tr1",
+        "ru",
+    }
     _platform2regions = {
         "br1": "americas",
         "eun1": "europe",
@@ -25,13 +37,11 @@ class PyotRouting:
 
 
 class PyotCore(PyotRouting, PyotCoreBase):
-
     class Meta(PyotCoreBase.Meta):
         pipeline = pipelines.lol
 
 
 class PyotStatic(PyotRouting, PyotStaticBase):
-
     class Meta(PyotStaticBase.Meta):
         pipeline = pipelines.lol
 

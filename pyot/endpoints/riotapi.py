@@ -1,4 +1,3 @@
-
 from typing import Dict
 from pyot.pipeline.token import PipelineToken
 from .base import BaseEndpoint
@@ -83,7 +82,7 @@ class RiotAPIEndpoint(BaseEndpoint):
             "content_v1_contents": "/val/content/v1/contents",
             "ranked_v1_leaderboards": "/val/ranked/v1/leaderboards/by-act/{act_id}",
             "status_v1_platform_data": "/val/status/v1/platform-data",
-        }
+        },
     }
 
     def clean(self, token: PipelineToken) -> Dict[str, str]:

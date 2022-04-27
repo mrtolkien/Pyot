@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class MatchInfoData(PyotStatic):
     id: str
     map_id: str
@@ -24,11 +25,15 @@ class MatchInfoData(PyotStatic):
     season_id: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"game_length_millis": "length_millis", "game_start_millis": "start_millis", "match_id": "id"}
+        renamed = {
+            "game_length_millis": "length_millis",
+            "game_start_millis": "start_millis",
+            "match_id": "id",
+        }
 
     @property
     def start(self) -> datetime:
-        return datetime.fromtimestamp(self.start_millis//1000)
+        return datetime.fromtimestamp(self.start_millis // 1000)
 
     @property
     def length(self) -> timedelta:
@@ -78,6 +83,7 @@ class MatchPlayerData(PyotStatic):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
 
@@ -121,8 +127,13 @@ class MatchPlayerKillData(PyotStatic):
 
     class Meta(PyotStatic.Meta):
         raws = {"assistant_puuids"}
-        renamed = {"killer": "killer_puuid", "victim": "victim_puuid", "assistants": "assistant_puuids",
-            "time_since_game_start_millis": "game_time_millis", "time_since_round_start_millis": "round_time_millis"}
+        renamed = {
+            "killer": "killer_puuid",
+            "victim": "victim_puuid",
+            "assistants": "assistant_puuids",
+            "time_since_game_start_millis": "game_time_millis",
+            "time_since_round_start_millis": "round_time_millis",
+        }
 
     @property
     def game_time(self) -> timedelta:
@@ -135,17 +146,23 @@ class MatchPlayerKillData(PyotStatic):
     @property
     def killer(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.killer_puuid).pipeline(self.metapipeline.name)
 
     @property
     def victim(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.victim_puuid).pipeline(self.metapipeline.name)
 
     @property
     def assistants(self) -> List["Account"]:
         from ..riot.account import Account
-        return [Account(puuid=i).pipeline(self.metapipeline.name) for i in self.assistant_puuids]
+
+        return [
+            Account(puuid=i).pipeline(self.metapipeline.name)
+            for i in self.assistant_puuids
+        ]
 
 
 class MatchPlayerDamageData(PyotStatic):
@@ -191,8 +208,12 @@ class MatchRoundResultData(PyotStatic):
     round_result_code: str
 
     class Meta(PyotStatic.Meta):
-        renamed = {"bomb_planter": "bomb_planter_puuid", "bomb_defuser": "bomb_defuser_puuid",
-            "plant_round_time": "plant_round_millis", "defuse_round_time": "defuse_round_millis"}
+        renamed = {
+            "bomb_planter": "bomb_planter_puuid",
+            "bomb_defuser": "bomb_defuser_puuid",
+            "plant_round_time": "plant_round_millis",
+            "defuse_round_time": "defuse_round_millis",
+        }
 
     @property
     def plant_round_time(self) -> timedelta:
@@ -205,11 +226,13 @@ class MatchRoundResultData(PyotStatic):
     @property
     def bomb_planter(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.bomb_planter_puuid).pipeline(self.metapipeline.name)
 
     @property
     def bomb_defuser(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.bomb_defuser_puuid).pipeline(self.metapipeline.name)
 
 
@@ -219,6 +242,7 @@ class MatchCoachData(PyotStatic):
 
 
 # PYOT CORE OBJECTS
+
 
 class Match(PyotCore):
     id: str
@@ -233,7 +257,11 @@ class Match(PyotCore):
     queue_id: str
 
     class Meta(PyotCore.Meta):
-        renamed = {"match_info": "info", "game_start_time_millis": "start_time_millis", "match_id": "id"}
+        renamed = {
+            "match_info": "info",
+            "game_start_time_millis": "start_time_millis",
+            "match_id": "id",
+        }
         rules = {"match_v1_match": ["id"]}
 
     def __init__(self, id: str = None, platform: str = models.val.DEFAULT_PLATFORM):
@@ -241,7 +269,7 @@ class Match(PyotCore):
 
     @property
     def start_time(self) -> datetime:
-        return datetime.fromtimestamp(self.start_time_millis//1000)
+        return datetime.fromtimestamp(self.start_time_millis // 1000)
 
 
 class MatchHistory(PyotCore):
@@ -268,6 +296,7 @@ class MatchHistory(PyotCore):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
 
@@ -299,5 +328,5 @@ class RecentMatches(PyotCore):
         return datetime.fromtimestamp(self.current_timestamp)
 
     @property
-    def matches(self)  -> List[Match]:
+    def matches(self) -> List[Match]:
         return [Match(id=id_, platform=self.platform) for id_ in self.match_ids]

@@ -6,7 +6,6 @@ from pyot.pipeline.token import PipelineToken
 
 
 class BaseEndpoint(ABC):
-
     @abstractproperty
     def base_url(self) -> str:
         raise NotImplementedError
@@ -24,7 +23,9 @@ class BaseEndpoint(ABC):
 
     def resolve(self, token: PipelineToken) -> str:
         try:
-            url = (self.base_url + self.endpoints[token.method]).format(**self.clean(token))
+            url = (self.base_url + self.endpoints[token.method]).format(
+                **self.clean(token)
+            )
             query = self.query(token.queries)
             return url + query
         except KeyError as e:

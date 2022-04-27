@@ -38,12 +38,18 @@ def activate_pipeline(model: str):
             raise ValueError("Name of pipeline must be alphanumeric")
         pipeline = Pipeline(model, cls.name, build_pipeline(cls.stores))
         if cls.name in AVAILABLE_MODELS and (not cls.default or not cls.name == model):
-            raise ValueError("Pipeline name must be different than model's name or the same as the subscripted model if set to default")
+            raise ValueError(
+                "Pipeline name must be different than model's name or the same as the subscripted model if set to default"
+            )
         if model in pipelines:
-            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (default pipeline of model already active)")
+            LOGGER.warning(
+                f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (default pipeline of model already active)"
+            )
             return cls
         if cls.name in pipelines:
-            LOGGER.warning(f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (pipeline already active)")
+            LOGGER.warning(
+                f"[Trace: Pyot Setup] WARN: An attempt to activate pipeline '{cls.name}' was ignored (pipeline already active)"
+            )
             return cls
         if cls.default:
             pipelines[model] = pipeline

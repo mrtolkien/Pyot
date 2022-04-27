@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class LeaderboardPlayerData(PyotStatic):
     puuid: str
     game_name: str
@@ -22,6 +23,7 @@ class LeaderboardPlayerData(PyotStatic):
     @property
     def account(self) -> "Account":
         from ..riot.account import Account
+
         return Account(puuid=self.puuid).pipeline(self.metapipeline.name)
 
 
@@ -32,6 +34,7 @@ class LeaderboardTierDetailData(PyotStatic):
 
 
 # PYOT CORE OBJECTS
+
 
 class Leaderboard(PyotCore):
     act_id: str
@@ -64,6 +67,6 @@ class Leaderboard(PyotCore):
         return len(self.players)
 
     def query(self, size: int = None, start_index: int = None):
-        '''Query parameters setter.'''
+        """Query parameters setter."""
         self._meta.query = parse_camelcase(locals())
         return self

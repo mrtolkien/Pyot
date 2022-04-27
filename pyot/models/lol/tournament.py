@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC
 
+
 class TournamentLobbyEventData(PyotStatic):
     summoner_id: str
     event_type: str
@@ -16,6 +17,7 @@ class TournamentLobbyEventData(PyotStatic):
 
 
 # PYOT CORE
+
 
 class TournamentProvider(PyotCore):
     id: int
@@ -28,11 +30,25 @@ class TournamentProvider(PyotCore):
         self.initialize(locals())
 
     def body(self, region: str, url: str):
-        '''Body parameters setter.'''
+        """Body parameters setter."""
         if not url.startswith("https://") and not url.startswith("http://"):
             raise TypeError("url should be well-formed, starting with an http protocol")
-        if region not in {"BR", "EUNE", "EUW", "JP", "LAN", "LAS", "NA", "OCE", "PBE", "RU", "TR"}:
-            raise TypeError(f"Invalid region '{region}' parameter, region in tournament-v4 uses client keys (NA, EUW, BR, LAN, ...)")
+        if region not in {
+            "BR",
+            "EUNE",
+            "EUW",
+            "JP",
+            "LAN",
+            "LAS",
+            "NA",
+            "OCE",
+            "PBE",
+            "RU",
+            "TR",
+        }:
+            raise TypeError(
+                f"Invalid region '{region}' parameter, region in tournament-v4 uses client keys (NA, EUW, BR, LAN, ...)"
+            )
         self._meta.body = parse_camelcase(locals())
         return self
 
@@ -45,7 +61,6 @@ class TournamentProvider(PyotCore):
 
 
 class TournamentStubProvider(TournamentProvider):
-
     class Meta(TournamentProvider.Meta):
         rules = {"tournament_stub_v4_providers": []}
 
@@ -61,7 +76,7 @@ class Tournament(PyotCore):
         self.initialize(locals())
 
     def body(self, name: str, provider_id: int):
-        '''Body parameters setter.'''
+        """Body parameters setter."""
         if not isinstance(provider_id, int):
             raise TypeError("provider_id must be int type")
         self._meta.body = parse_camelcase(locals())
@@ -76,7 +91,6 @@ class Tournament(PyotCore):
 
 
 class TournamentStub(Tournament):
-
     class Meta(Tournament.Meta):
         rules = {"tournament_stub_v4_tournaments": []}
 
@@ -107,7 +121,6 @@ class TournamentLobbyEvents(PyotCore):
 
 
 class TournamentStubLobbyEvents(TournamentLobbyEvents):
-
     class Meta(TournamentLobbyEvents.Meta):
         rules = {"tournament_stub_v4_lobby_events": ["code"]}
 
@@ -135,20 +148,38 @@ class TournamentCode(PyotCore):
     def __init__(self, code: str = None, region: str = None):
         self.initialize(locals())
 
-    def body(self, map_type: str, pick_type: str, spectator_type: str, allowed_summoner_ids: List[str] = None):
-        '''Body parameters setter.'''
-        if pick_type not in ["BLIND_PICK", "DRAFT_MODE", "ALL_RANDOM", "TOURNAMENT_DRAFT"]:
-            raise TypeError(f"Invalid pick type '{pick_type}' parameter, must be one of BLIND_PICK, DRAFT_MODE, ALL_RANDOM, TOURNAMENT_DRAFT")
+    def body(
+        self,
+        map_type: str,
+        pick_type: str,
+        spectator_type: str,
+        allowed_summoner_ids: List[str] = None,
+    ):
+        """Body parameters setter."""
+        if pick_type not in [
+            "BLIND_PICK",
+            "DRAFT_MODE",
+            "ALL_RANDOM",
+            "TOURNAMENT_DRAFT",
+        ]:
+            raise TypeError(
+                f"Invalid pick type '{pick_type}' parameter, must be one of BLIND_PICK, DRAFT_MODE, ALL_RANDOM, TOURNAMENT_DRAFT"
+            )
         if map_type not in ["SUMMONERS_RIFT", "TWISTED_TREELINE", "HOWLING_ABYSS"]:
-            raise TypeError(f"Invalid map type '{map_type}' parameter, must be one of SUMMONERS_RIFT, TWISTED_TREELINE, HOWLING_ABYSS")
+            raise TypeError(
+                f"Invalid map type '{map_type}' parameter, must be one of SUMMONERS_RIFT, TWISTED_TREELINE, HOWLING_ABYSS"
+            )
         if spectator_type not in ["NONE", "LOBBYONLY", "ALL"]:
-            raise TypeError(f"Invalid spectator type '{spectator_type}' parameter, must be one of NONE, LOBBYONLY, ALL")
+            raise TypeError(
+                f"Invalid spectator type '{spectator_type}' parameter, must be one of NONE, LOBBYONLY, ALL"
+            )
         self._meta.body = parse_camelcase(locals())
         return self
 
     @property
     def summoners(self) -> "Summoner":
         from .summoner import Summoner
+
         return [Summoner(id=id_) for id_ in self.summoner_ids]
 
 
@@ -169,16 +200,37 @@ class TournamentCodes(PyotCore):
         self._meta.query = parse_camelcase(locals())
         return self
 
-    def body(self, map_type: str, pick_type: str, team_size: int, spectator_type: str, allowed_summoner_ids: List[str] = None, metadata: str = None):
-        '''Body parameters setter.'''
-        if pick_type not in ["BLIND_PICK", "DRAFT_MODE", "ALL_RANDOM", "TOURNAMENT_DRAFT"]:
-            raise TypeError(f"Invalid pick type '{pick_type}' parameter, must be one of BLIND_PICK, DRAFT_MODE, ALL_RANDOM, TOURNAMENT_DRAFT")
+    def body(
+        self,
+        map_type: str,
+        pick_type: str,
+        team_size: int,
+        spectator_type: str,
+        allowed_summoner_ids: List[str] = None,
+        metadata: str = None,
+    ):
+        """Body parameters setter."""
+        if pick_type not in [
+            "BLIND_PICK",
+            "DRAFT_MODE",
+            "ALL_RANDOM",
+            "TOURNAMENT_DRAFT",
+        ]:
+            raise TypeError(
+                f"Invalid pick type '{pick_type}' parameter, must be one of BLIND_PICK, DRAFT_MODE, ALL_RANDOM, TOURNAMENT_DRAFT"
+            )
         if map_type not in ["SUMMONERS_RIFT", "TWISTED_TREELINE", "HOWLING_ABYSS"]:
-            raise TypeError(f"Invalid map type '{map_type}' parameter, must be one of SUMMONERS_RIFT, TWISTED_TREELINE, HOWLING_ABYSS")
+            raise TypeError(
+                f"Invalid map type '{map_type}' parameter, must be one of SUMMONERS_RIFT, TWISTED_TREELINE, HOWLING_ABYSS"
+            )
         if spectator_type not in ["NONE", "LOBBYONLY", "ALL"]:
-            raise TypeError(f"Invalid spectator type '{spectator_type}' parameter, must be one of NONE, LOBBYONLY, ALL")
+            raise TypeError(
+                f"Invalid spectator type '{spectator_type}' parameter, must be one of NONE, LOBBYONLY, ALL"
+            )
         if not isinstance(team_size, int) or team_size > 5 or team_size < 1:
-            raise TypeError(f"Invalid team size '{team_size}' parameter, must be between 1-5")
+            raise TypeError(
+                f"Invalid team size '{team_size}' parameter, must be between 1-5"
+            )
         self._meta.body = parse_camelcase(locals())
         return self
 
@@ -197,6 +249,5 @@ class TournamentCodes(PyotCore):
 
 
 class TournamentStubCodes(TournamentCodes):
-
     class Meta(TournamentCodes.Meta):
         rules = {"tournament_stub_v4_codes": []}

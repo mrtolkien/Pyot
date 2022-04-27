@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class MiniSeriesData(PyotStatic):
     target: int
     wins: int
@@ -33,7 +34,10 @@ class LeagueEntryData(PyotStatic):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
-        return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
+
+        return Summoner(
+            id=self.summoner_id, name=self.summoner_name, platform=self.platform
+        )
 
 
 class SummonerLeagueEntryData(LeagueEntryData):
@@ -80,19 +84,16 @@ class ApexLeague(League):
 
 
 class ChallengerLeague(ApexLeague):
-
     class Meta(ApexLeague.Meta):
         rules = {"league_v1_challenger_league": []}
 
 
 class GrandmasterLeague(ApexLeague):
-
     class Meta(ApexLeague.Meta):
         rules = {"league_v1_grandmaster_league": []}
 
 
 class MasterLeague(ApexLeague):
-
     class Meta(ApexLeague.Meta):
         rules = {"league_v1_master_league": []}
 
@@ -104,7 +105,9 @@ class SummonerLeague(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"league_v1_summoner_entries": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+    def __init__(
+        self, summoner_id: str = None, platform: str = models.tft.DEFAULT_PLATFORM
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -126,6 +129,7 @@ class SummonerLeague(PyotCore):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(id=self.summoner_id, platform=self.platform)
 
 
@@ -139,15 +143,25 @@ class DivisionLeague(SummonerLeague):
         division_list = ["I", "II", "III", "IV"]
         tier_list = ["DIAMOND", "PLATINUM", "GOLD", "SILVER", "BRONZE", "IRON"]
 
-    def __init__(self, division: str = None, tier: str = None, platform: str = models.tft.DEFAULT_PLATFORM):
+    def __init__(
+        self,
+        division: str = None,
+        tier: str = None,
+        platform: str = models.tft.DEFAULT_PLATFORM,
+    ):
         self.initialize(locals())
 
     def query(self, page: int = None):
-        '''Query parameters setter.'''
-        if page == 0: raise AttributeError("Invalid 'page' attribute, it should be greater than 0")
+        """Query parameters setter."""
+        if page == 0:
+            raise AttributeError(
+                "Invalid 'page' attribute, it should be greater than 0"
+            )
         self._meta.query = parse_camelcase(locals())
         return self
 
     @property
     def summoner(self) -> NoReturn:
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'summoner'")
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute 'summoner'"
+        )

@@ -5,6 +5,7 @@ from .base import PyotCore, PyotStatic
 
 ## PYOT STATIC OBJECTS
 
+
 class LeaderboardPlayerData(PyotStatic):
     name: str
     rank: int
@@ -12,6 +13,7 @@ class LeaderboardPlayerData(PyotStatic):
 
 
 # PYOT CORE OBJECTS
+
 
 class Leaderboard(PyotCore):
     players: List[LeaderboardPlayerData]

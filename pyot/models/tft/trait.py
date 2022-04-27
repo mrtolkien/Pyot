@@ -10,6 +10,7 @@ from .base import PyotCore, PyotStatic
 
 # PYOT STATIC OBJECT
 
+
 class TraitEffectData(PyotStatic):
     max_units: int
     min_units: int
@@ -21,6 +22,7 @@ class TraitEffectData(PyotStatic):
 
 
 # PYOT CORE OBJECT
+
 
 class Trait(PyotCore):
     set: int
@@ -34,7 +36,13 @@ class Trait(PyotCore):
         rules = {"cdragon_tft_full": ["?set", "?key", "version", "locale"]}
         renamed = {"api_name": "key", "desc": "description", "icon": "icon_path"}
 
-    def __init__(self, key: str = None, set: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        key: str = None,
+        set: int = None,
+        version: str = models.tft.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
         if key and set is None:
             self.find_set()
@@ -65,7 +73,12 @@ class Traits(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_tft_full": ["?set", "version", "locale"]}
 
-    def __init__(self, set: int = -1, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        set: int = -1,
+        version: str = models.tft.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -83,7 +96,9 @@ class Traits(PyotCore):
         try:
             return join_set_data(data, self.set, "traits")
         except KeyError as e:
-            raise NotFound("Request was successful but filtering gave no matching item") from e
+            raise NotFound(
+                "Request was successful but filtering gave no matching item"
+            ) from e
 
     def transform(self, data):
         return {"traits": data}

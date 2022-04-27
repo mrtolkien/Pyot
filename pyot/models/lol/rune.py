@@ -8,6 +8,7 @@ from .base import PyotCore
 
 # PYOT CORE OBJECTS
 
+
 class Rune(PyotCore):
     id: int
     name: str
@@ -21,9 +22,18 @@ class Rune(PyotCore):
     class Meta(PyotCore.Meta):
         raws = {"end_of_game_stat_descs"}
         rules = {"cdragon_rune_full": ["version", "locale", "?id"]}
-        renamed = {"major_change_patch_version": "major_patch", "long_desc": "long_description", "short_desc": "description"}
+        renamed = {
+            "major_change_patch_version": "major_patch",
+            "long_desc": "long_description",
+            "short_desc": "description",
+        }
 
-    def __init__(self, id: int = None, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        id: int = None,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     @cache_indexes
@@ -45,7 +55,11 @@ class Runes(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_rune_full": ["version", "locale"]}
 
-    def __init__(self, version: str = models.lol.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        version: str = models.lol.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):

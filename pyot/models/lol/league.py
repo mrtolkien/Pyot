@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class MiniSeriesData(PyotStatic):
     target: int
     wins: int
@@ -33,7 +34,10 @@ class LeagueEntryData(PyotStatic):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
-        return Summoner(id=self.summoner_id, name=self.summoner_name, platform=self.platform)
+
+        return Summoner(
+            id=self.summoner_id, name=self.summoner_name, platform=self.platform
+        )
 
 
 class SummonerLeagueEntryData(LeagueEntryData):
@@ -50,6 +54,7 @@ class SummonerLeagueEntryData(LeagueEntryData):
 
 
 # PYOT CORE OBJECTS
+
 
 class League(PyotCore):
     tier: str
@@ -82,19 +87,16 @@ class ApexLeague(League):
 
 
 class ChallengerLeague(ApexLeague):
-
     class Meta(ApexLeague.Meta):
         rules = {"league_v4_challenger_league": ["queue"]}
 
 
 class GrandmasterLeague(ApexLeague):
-
     class Meta(ApexLeague.Meta):
         rules = {"league_v4_grandmaster_league": ["queue"]}
 
 
 class MasterLeague(ApexLeague):
-
     class Meta(ApexLeague.Meta):
         rules = {"league_v4_master_league": ["queue"]}
 
@@ -106,7 +108,9 @@ class SummonerLeague(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"league_v4_summoner_entries": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(
+        self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -128,6 +132,7 @@ class SummonerLeague(PyotCore):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(id=self.summoner_id, platform=self.platform)
 
 
@@ -139,14 +144,22 @@ class DivisionLeague(SummonerLeague):
     class Meta(SummonerLeague.Meta):
         rules = {"league_v4_entries_by_division": ["queue", "tier", "division"]}
 
-    def __init__(self, queue: str = None, division: str = None, tier: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(
+        self,
+        queue: str = None,
+        division: str = None,
+        tier: str = None,
+        platform: str = models.lol.DEFAULT_PLATFORM,
+    ):
         self.initialize(locals())
 
     def query(self, page: int = None):
-        '''Query parameters setter.'''
+        """Query parameters setter."""
         self._meta.query = parse_camelcase(locals())
         return self
 
     @property
     def summoner(self) -> NoReturn:
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute 'summoner'")
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute 'summoner'"
+        )

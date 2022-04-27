@@ -7,7 +7,6 @@ V = TypeVar("V")
 
 
 class ConfDict(dict, Mapping[K, V]):
-
     def __init__(self, cls: Type[V], throw: str, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.throw = throw
@@ -25,7 +24,6 @@ class ConfDict(dict, Mapping[K, V]):
 
 
 def reraise_model_inactive(func):
-
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)

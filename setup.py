@@ -6,7 +6,7 @@ from os import path
 from setuptools import setup, find_packages
 
 this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
 
@@ -38,8 +38,17 @@ setup(
     url="https://github.com/paaksing/Pyot",
     description="AsyncIO based high level Python framework Riot Games API framework which encourages rapid development and clean, pragmatic design.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
-    keywords=["Riot Games", "League of Legends", "Teamfight Tactics", "Valorant", "Legends of Runeterra", "API", "REST", "asyncio"],
+    long_description_content_type="text/markdown",
+    keywords=[
+        "Riot Games",
+        "League of Legends",
+        "Teamfight Tactics",
+        "Valorant",
+        "Legends of Runeterra",
+        "API",
+        "REST",
+        "asyncio",
+    ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3.7",

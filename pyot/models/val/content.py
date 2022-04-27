@@ -75,10 +75,12 @@ class ContentActData(PyotStatic):
     @property
     def leaderboard(self) -> "Leaderboard":
         from .ranked import Leaderboard
+
         return Leaderboard(act_id=self.id, platform=self.platform)
 
 
 # PYOT CORE OBJECTS
+
 
 class Content(PyotCore):
     version: str
@@ -105,6 +107,6 @@ class Content(PyotCore):
         self.initialize(locals())
 
     def query(self, locale: str = None):
-        '''Query parameters setter.'''
+        """Query parameters setter."""
         self._meta.query = parse_camelcase(locals())
         return self

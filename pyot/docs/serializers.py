@@ -2,7 +2,6 @@ from typing import Any, List
 
 
 class PyotDocTypeSerializer:
-
     def __init__(self, type: Any, relative_paths: List[str]) -> None:
         if type is None:
             self.data = None
@@ -14,4 +13,4 @@ class PyotDocTypeSerializer:
         self.data = self.data.replace("'", "")
         for relative_path in relative_paths:
             if self.data.startswith(relative_path):
-                self.data = self.data[len(relative_path):]
+                self.data = self.data[len(relative_path) :]

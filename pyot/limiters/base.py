@@ -10,8 +10,15 @@ LOGGER = Logger(__name__)
 
 
 class LimiterToken:
-
-    def __init__(self, server: str, method: str, epoch: float, sleep: float, allowed: List[str], pinging: List[Tuple[str, str, int]]) -> None:
+    def __init__(
+        self,
+        server: str,
+        method: str,
+        epoch: float,
+        sleep: float,
+        allowed: List[str],
+        pinging: List[Tuple[str, str, int]],
+    ) -> None:
         self.server = server
         self.method = method
         self.epoch = epoch
@@ -24,7 +31,6 @@ class LimiterToken:
 
 
 class BaseLimiter(ABC):
-
     def parse_headers(self, response: ClientResponse) -> Dict[str, List[List[int]]]:
         if response is None:
             return None
@@ -32,10 +38,22 @@ class BaseLimiter(ABC):
         if headers is None:
             return None
         try:
-            app_limit = [[int(val) for val in token.split(':')] for token in headers["X-App-Rate-Limit"].split(',')]
-            app_count = [[int(val) for val in token.split(':')] for token in headers["X-App-Rate-Limit-Count"].split(',')]
-            method_limit = [[int(val) for val in token.split(':')] for token in headers["X-Method-Rate-Limit"].split(',')]
-            method_count = [[int(val) for val in token.split(':')] for token in headers["X-Method-Rate-Limit-Count"].split(',')]
+            app_limit = [
+                [int(val) for val in token.split(":")]
+                for token in headers["X-App-Rate-Limit"].split(",")
+            ]
+            app_count = [
+                [int(val) for val in token.split(":")]
+                for token in headers["X-App-Rate-Limit-Count"].split(",")
+            ]
+            method_limit = [
+                [int(val) for val in token.split(":")]
+                for token in headers["X-Method-Rate-Limit"].split(",")
+            ]
+            method_count = [
+                [int(val) for val in token.split(":")]
+                for token in headers["X-Method-Rate-Limit-Count"].split(",")
+            ]
             # if len(method_limit) == 1:
             #     method_limit.append(method_limit[0])
             # if len(method_count) == 1:
@@ -56,8 +74,12 @@ class BaseLimiter(ABC):
         if headers is None:
             return None
         return {
-            "type": response.headers["X-Rate-Limit-Type"] if "X-Rate-Limit-Type" in response.headers else "service",
-            "time": response.headers["Retry-After"] if "Retry-After" in response.headers else 1,
+            "type": response.headers["X-Rate-Limit-Type"]
+            if "X-Rate-Limit-Type" in response.headers
+            else "service",
+            "time": response.headers["Retry-After"]
+            if "Retry-After" in response.headers
+            else 1,
         }
 
     @abstractmethod

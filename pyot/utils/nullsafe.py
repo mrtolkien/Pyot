@@ -5,7 +5,7 @@ T = TypeVar("T")
 
 
 class NullSafe:
-    '''Documentation at: <https://github.com/paaksing/nullsafe-python>'''
+    """Documentation at: <https://github.com/paaksing/nullsafe-python>"""
 
     def __getattr__(self, k: str) -> "NullSafe":
         return undefined
@@ -47,7 +47,7 @@ class NullSafeProxy(Generic[T]):
     def __init__(self, o: T) -> None:
         self.__o = o
 
-    def __getitem__(self, k: str) -> Union[Any,  NullSafe]:
+    def __getitem__(self, k: str) -> Union[Any, NullSafe]:
         try:
             val = self.__o.__getitem__(k)
             if val is None:
@@ -56,7 +56,7 @@ class NullSafeProxy(Generic[T]):
         except (KeyError, AttributeError):
             return undefined
 
-    def __getattr__(self, name: str) -> Union[Any,  NullSafe]:
+    def __getattr__(self, name: str) -> Union[Any, NullSafe]:
         val = getattr(self.__o, name, undefined)
         return undefined if val is None else val
 
@@ -66,7 +66,9 @@ class NullSafeProxy(Generic[T]):
         raise AttributeError(f"'{self.__class__.__name__}' object can't set attribute")
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__module__}.{self.__class__.__name__}({repr(self.__o)})"
+        return (
+            f"{self.__class__.__module__}.{self.__class__.__name__}({repr(self.__o)})"
+        )
 
     def __str__(self) -> str:
         return str(self.__o)

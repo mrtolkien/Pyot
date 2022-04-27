@@ -18,12 +18,23 @@ class RedisCache(Store):
 
     type = StoreType.CACHE
 
-    def __init__(self, game: str, host='127.0.0.1', port=6379, db=0, expirations: Any = None, log_level: int = 0, kwargs=None) -> None:
+    def __init__(
+        self,
+        game: str,
+        host="127.0.0.1",
+        port=6379,
+        db=0,
+        expirations: Any = None,
+        log_level: int = 0,
+        kwargs=None,
+    ) -> None:
         self.game = game
         kwargs = kwargs or {}
         self.location = f"{host}:{port}/{db}"
         self.data = EventLoopFactory(
-            factory=lambda: aioredis.create_redis_pool(f"redis://{host}:{port}/{db}", **kwargs),
+            factory=lambda: aioredis.create_redis_pool(
+                f"redis://{host}:{port}/{db}", **kwargs
+            ),
             callback=lambda x: x.close(),
         )
         self.expirations = ExpirationManager(game, expirations)
@@ -37,7 +48,10 @@ class RedisCache(Store):
         item = await cache.get(token.value)
         if item is None:
             raise NotFound(token.value)
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > RedisCache > {self.location}] GET: {token.value}")
+        LOGGER.log(
+            self.log_level,
+            f"[Trace: {self.game} > RedisCache > {self.location}] GET: {token.value}",
+        )
         return from_bytes(item)
 
     async def set(self, token: PipelineToken, value: Any, **kwargs) -> None:
@@ -47,12 +61,18 @@ class RedisCache(Store):
                 timeout = None
             cache = await self.data.get()
             await cache.set(token.value, to_bytes(value), expire=timeout)
-            LOGGER.log(self.log_level, f"[Trace: {self.game} > RedisCache > {self.location}] SET: {token.value}")
+            LOGGER.log(
+                self.log_level,
+                f"[Trace: {self.game} > RedisCache > {self.location}] SET: {token.value}",
+            )
 
     async def delete(self, token: PipelineToken, **kwargs) -> None:
         cache = await self.data.get()
         await cache.delete(token.value)
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > RedisCache > {self.location}] DELETE: {token.value}")
+        LOGGER.log(
+            self.log_level,
+            f"[Trace: {self.game} > RedisCache > {self.location}] DELETE: {token.value}",
+        )
 
     async def contains(self, token: PipelineToken, **kwargs) -> bool:
         cache = await self.data.get()
@@ -64,4 +84,7 @@ class RedisCache(Store):
     async def clear(self, **kwargs):
         cache = await self.data.get()
         await cache.flushall()
-        LOGGER.log(self.log_level, f"[Trace: {self.game} > RedisCache > {self.location}] CLEAR: Store has been cleared successfully")
+        LOGGER.log(
+            self.log_level,
+            f"[Trace: {self.game} > RedisCache > {self.location}] CLEAR: Store has been cleared successfully",
+        )

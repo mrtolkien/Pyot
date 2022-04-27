@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class ChampionAbilityVariableData(PyotStatic):
     name: str
     value: List[float]
@@ -53,6 +54,7 @@ class ChampionStatData(PyotStatic):
 
 # PYOT CORE OBJECTS
 
+
 class Champion(PyotCore):
     set: int
     key: str
@@ -69,7 +71,13 @@ class Champion(PyotCore):
         rules = {"cdragon_tft_full": ["?key", "?set", "version", "locale"]}
         renamed = {"api_name": "key", "traits": "trait_keys", "icon": "icon_path"}
 
-    def __init__(self, key: str = None, set: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        key: str = None,
+        set: int = None,
+        version: str = models.tft.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
         if key and set is None:
             self.find_set()
@@ -83,9 +91,7 @@ class Champion(PyotCore):
     @cache_indexes
     def filter(self, indexer, data):
         return indexer.get(
-            self.key,
-            join_set_data(data, self.set, "champions"),
-            "apiName"
+            self.key, join_set_data(data, self.set, "champions"), "apiName"
         )
 
     @lazy_property
@@ -95,7 +101,11 @@ class Champion(PyotCore):
     @property
     def traits(self) -> List["Trait"]:
         from .trait import Trait
-        return [Trait(key=i, set=self.set, version=self.version, locale=self.locale) for i in self.trait_keys]
+
+        return [
+            Trait(key=i, set=self.set, version=self.version, locale=self.locale)
+            for i in self.trait_keys
+        ]
 
 
 class Champions(PyotCore):
@@ -105,7 +115,12 @@ class Champions(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_tft_full": ["?set", "version", "locale"]}
 
-    def __init__(self, set: int = -1, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        set: int = -1,
+        version: str = models.tft.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):
@@ -123,7 +138,9 @@ class Champions(PyotCore):
         try:
             return join_set_data(data, self.set, "champions")
         except KeyError as e:
-            raise NotFound("Request was successful but filtering gave no matching item") from e
+            raise NotFound(
+                "Request was successful but filtering gave no matching item"
+            ) from e
 
     def transform(self, data):
         return {"champions": data}

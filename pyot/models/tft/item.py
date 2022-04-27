@@ -8,6 +8,7 @@ from .base import PyotCore
 
 # PYOT CORE OBJECT
 
+
 class Item(PyotCore):
     description: str
     effects: Dict[str, Union[float, str]]
@@ -20,9 +21,14 @@ class Item(PyotCore):
     class Meta(PyotCore.Meta):
         raws = {"from_ids", "effects"}
         rules = {"cdragon_tft_full": ["?id", "version", "locale"]}
-        renamed = {"from":"from_ids", "desc": "description", "icon": "icon_path"}
+        renamed = {"from": "from_ids", "desc": "description", "icon": "icon_path"}
 
-    def __init__(self, id: int = None, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        id: int = None,
+        version: str = models.tft.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     @cache_indexes
@@ -39,7 +45,9 @@ class Item(PyotCore):
 
     @property
     def from_items(self) -> List["Item"]:
-        return [Item(id=i, version=self.version, locale=self.locale) for i in self.from_ids]
+        return [
+            Item(id=i, version=self.version, locale=self.locale) for i in self.from_ids
+        ]
 
 
 class Items(PyotCore):
@@ -48,7 +56,11 @@ class Items(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"cdragon_tft_full": ["version", "locale"]}
 
-    def __init__(self, version: str = models.tft.DEFAULT_VERSION, locale: str = models.lol.DEFAULT_LOCALE):
+    def __init__(
+        self,
+        version: str = models.tft.DEFAULT_VERSION,
+        locale: str = models.lol.DEFAULT_LOCALE,
+    ):
         self.initialize(locals())
 
     def __getitem__(self, item):

@@ -1,4 +1,3 @@
-
 from typing import TYPE_CHECKING
 
 from pyot.conf.model import models
@@ -15,7 +14,9 @@ class ThirdPartyCode(PyotCore):
     class Meta(PyotCore.Meta):
         rules = {"third_party_code_v4_code": ["summoner_id"]}
 
-    def __init__(self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM):
+    def __init__(
+        self, summoner_id: str = None, platform: str = models.lol.DEFAULT_PLATFORM
+    ):
         self.initialize(locals())
 
     def transform(self, data):
@@ -26,4 +27,5 @@ class ThirdPartyCode(PyotCore):
     @property
     def summoner(self) -> "Summoner":
         from .summoner import Summoner
+
         return Summoner(id=self.summoner_id, platform=self.platform)

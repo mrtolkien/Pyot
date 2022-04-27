@@ -2,7 +2,7 @@ from pyot.core.objects import PyotCoreBase, PyotStaticBase
 from pyot.conf.pipeline import pipelines
 
 
-MODULE_REPR = 'Valorant'
+MODULE_REPR = "Valorant"
 
 
 class PyotRouting:
@@ -12,13 +12,11 @@ class PyotRouting:
 
 
 class PyotCore(PyotRouting, PyotCoreBase):
-
     class Meta(PyotCoreBase.Meta):
         pipeline = pipelines.val
 
 
 class PyotStatic(PyotRouting, PyotStaticBase):
-
     class Meta(PyotStaticBase.Meta):
         pipeline = pipelines.val
 

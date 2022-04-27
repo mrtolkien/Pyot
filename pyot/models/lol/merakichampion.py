@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 # PYOT STATIC OBJECTS
 
+
 class MerakiChampionSpellModifierData(PyotStatic):
     values: List[float]
     units: List[str]
@@ -181,6 +182,7 @@ class MerakiChampionSkinData(PyotStatic):
 
 # PYOT CORE OBJECTS
 
+
 class MerakiChampion(PyotCore):
     id: int
     key: str
@@ -222,6 +224,7 @@ class MerakiChampion(PyotCore):
     @property
     def champion(self) -> "Champion":
         from .champion import Champion
+
         return Champion(key=self.key, locale="en_us")
 
     def transform(self, data):

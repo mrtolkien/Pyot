@@ -25,4 +25,6 @@ def get_module_locals(o: Type):
 
 
 def get_properties(o: PyotStaticBase) -> List[Tuple[str, FunctionType]]:
-    return inspect.getmembers(o.__class__, predicate=lambda func: isinstance(func, property))
+    return inspect.getmembers(
+        o.__class__, predicate=lambda func: isinstance(func, property)
+    )

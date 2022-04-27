@@ -15,35 +15,41 @@ factories: List["EventLoopFactory"] = []
 
 
 class ResourceManager:
-    '''Resource managers for event loops'''
+    """Resource managers for event loops"""
 
     states: Dict[str, Dict[asyncio.AbstractEventLoop, bool]] = {
         "atomic": defaultdict(bool)
     }
 
     @classmethod
-    def atomic(cls, async_func: Callable[..., Awaitable[R]]) -> Callable[..., Awaitable[R]]:
-        '''
+    def atomic(
+        cls, async_func: Callable[..., Awaitable[R]]
+    ) -> Callable[..., Awaitable[R]]:
+        """
         Wrap an async function with an atomic resource manager.
         This manager tells where exactly resources will be used in an event loop and
         does proper setups and cleanups of these resources.\n
         Only one atomic manager may be in action at any moment in an event loop.
 
         Usage: As decorators.
-        '''
+        """
         if not asyncio.iscoroutinefunction(async_func):
             raise TypeError(f"'{async_func}' is not an async function")
+
         @wraps(async_func)
         async def wrapper(*args, **kwargs):
             state = cls.states["atomic"][asyncio.get_event_loop()]
             if state:
-                raise RuntimeError("Another atomic resource manager is already running in the event loop")
+                raise RuntimeError(
+                    "Another atomic resource manager is already running in the event loop"
+                )
             cls.states["atomic"][asyncio.get_event_loop()] = True
             try:
                 return await async_func(*args, **kwargs)
             finally:
                 await asyncio.gather(*(factory.close() for factory in factories))
                 cls.states["atomic"][asyncio.get_event_loop()] = False
+
         return wrapper
 
 
@@ -51,11 +57,17 @@ resource_manager = ResourceManager
 
 
 class EventLoopFactory(Generic[R1, R2]):
-    '''Factory for creating isolated copies of internal streams for each unique event loop.'''
+    """Factory for creating isolated copies of internal streams for each unique event loop."""
 
     loops: Dict[asyncio.AbstractEventLoop, Union[R1, R2]]
 
-    def __init__(self, factory: Callable[..., Union[R1, Awaitable[R2]]], callback=None, max_loops: int = 128, t: Type[R1] = None):
+    def __init__(
+        self,
+        factory: Callable[..., Union[R1, Awaitable[R2]]],
+        callback=None,
+        max_loops: int = 128,
+        t: Type[R1] = None,
+    ):
         self.loops = {}
         self.lock = SealLock()
         self.factory = factory

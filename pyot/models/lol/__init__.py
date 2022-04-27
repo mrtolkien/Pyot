@@ -1,6 +1,23 @@
-from .tournament import Tournament, TournamentProvider, TournamentCodes, TournamentCode, TournamentLobbyEvents, TournamentStub, TournamentStubCodes, TournamentStubLobbyEvents, TournamentStubProvider
+from .tournament import (
+    Tournament,
+    TournamentProvider,
+    TournamentCodes,
+    TournamentCode,
+    TournamentLobbyEvents,
+    TournamentStub,
+    TournamentStubCodes,
+    TournamentStubLobbyEvents,
+    TournamentStubProvider,
+)
 from .championmastery import ChampionMasteries, ChampionMastery
-from .league import League, ChallengerLeague, GrandmasterLeague, MasterLeague, SummonerLeague, DivisionLeague
+from .league import (
+    League,
+    ChallengerLeague,
+    GrandmasterLeague,
+    MasterLeague,
+    SummonerLeague,
+    DivisionLeague,
+)
 from .clash import ClashPlayers, ClashTeam, ClashTournaments, ClashTournament
 from .match import Match, Timeline, MatchHistory
 from .profileicon import ProfileIcon, ProfileIcons
